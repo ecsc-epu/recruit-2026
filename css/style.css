@@ -50,6 +50,7 @@ body.no3d #gl, body.no3d #seam { display: none; }
 #ghost div:nth-child(even) { margin-left: -24vw; }
 
 #stage { position: fixed; left: 0; top: 0; z-index: 2; transform-origin: 0 0; pointer-events: none; user-select: none; -webkit-user-select: none; }
+#stage-top { position: fixed; left: 0; top: 0; z-index: 6; transform-origin: 0 0; pointer-events: none; }
 #blood { position: fixed; left: 0; top: 0; width: 100vw; z-index: 5; pointer-events: none; overflow: visible; filter: drop-shadow(0 3px 2px rgba(0,0,0,.45)); }
 #sc { position: fixed; left: -500px; top: 0; width: 300px; height: 120px; opacity: 0; pointer-events: none; }
 
@@ -275,8 +276,8 @@ body.kg-typing #blood, body.kg-typing #drops, body.kg-typing #seam { visibility:
 #stage.port .p-title { left: 36px; top: 46px; width: 828px; height: 288px; }
 #stage.port .p-date { left: 310px; top: 350px; width: 554px; height: 46px; }
 #stage.port .p-pirate { left: 24px; top: 408px; width: 250px; height: 312px; }
-#stage.port .p-bubble { left: 262px; top: 408px; width: 420px; }
-#stage.port .p-bubble p { font-size: 26px; }
+.port .p-bubble { left: 262px; top: 408px; width: 420px; }
+.port .p-bubble p { font-size: 26px; }
 #stage.port .p-splat1 { left: 244px; top: 586px; width: 200px; height: 146px; }
 #stage.port .p-jcard { display: none; }
 #stage.port .p-recruit { left: 60px; top: 916px; width: 780px; height: 206px; }

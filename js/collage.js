@@ -79,6 +79,14 @@
       <div class="piece p-advisory drag"><b>${esc(S.stickers.advisory[0])}</b><strong>${esc(S.stickers.advisory[1])}</strong><b>${esc(S.stickers.advisory[2])}</b></div>
     `;
 
+    let top = $('#stage-top');
+    if (!top) {
+      top = document.createElement('div');
+      top.id = 'stage-top';
+      document.body.appendChild(top);
+    }
+    top.appendChild($('.p-bubble'));
+
     splat($('.p-splat1 svg'), 11, 220, 160, S.stickers.splat1, 'splat-a');
     splat($('.p-splat2 svg'), 5, 170, 130, S.stickers.splat2, 'splat-b');
     $('#ghost').innerHTML = Array.from({ length: 6 }, () => `<div>${esc(S.ghost).repeat(3)}</div>`).join('');
@@ -325,10 +333,8 @@
     const g = svg('g', { class: 'drips top' });
     b.appendChild(g);
     const longOnes = [];
-    const bub = $('.p-bubble').getBoundingClientRect();
-    const overBubble = (x, w) => x + w > bub.left - 12 && x - w < bub.right + 12;
     for (let x = 6 * s; x < W; x += (22 + r() * 70) * s) {
-      const long = r() < 0.18 && !overBubble(x, (5 + 12) * s);
+      const long = r() < 0.18;
       const w = (5 + r() * 12) * s;
       const len = (long ? 70 + r() * 150 : 6 + r() * 40) * s;
       g.appendChild(drip(x, band - 2, w, len));
@@ -663,10 +669,12 @@
     const ox = (W - B.w * s) / 2, oy = (H - B.h * s) / 2;
     const changed = !EPU.layout || EPU.layout.mode !== mode;
     EPU.layout = { W, H, mode, AW: B.w, AH: B.h, s, ox, oy };
-    stage.className = mode;
-    stage.style.width = B.w + 'px';
-    stage.style.height = B.h + 'px';
-    stage.style.transform = `translate(${ox}px, ${oy}px) scale(${s})`;
+    for (const el of [stage, $('#stage-top')]) {
+      el.className = mode;
+      el.style.width = B.w + 'px';
+      el.style.height = B.h + 'px';
+      el.style.transform = `translate(${ox}px, ${oy}px) scale(${s})`;
+    }
     document.documentElement.style.setProperty('--s', s);
     if (changed) {
       $$('.piece', stage).forEach((p) => {
