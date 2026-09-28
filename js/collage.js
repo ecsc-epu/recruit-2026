@@ -325,8 +325,10 @@
     const g = svg('g', { class: 'drips top' });
     b.appendChild(g);
     const longOnes = [];
+    const bub = $('.p-bubble').getBoundingClientRect();
+    const overBubble = (x, w) => x + w > bub.left - 12 && x - w < bub.right + 12;
     for (let x = 6 * s; x < W; x += (22 + r() * 70) * s) {
-      const long = r() < 0.18;
+      const long = r() < 0.18 && !overBubble(x, (5 + 12) * s);
       const w = (5 + r() * 12) * s;
       const len = (long ? 70 + r() * 150 : 6 + r() * 40) * s;
       g.appendChild(drip(x, band - 2, w, len));
