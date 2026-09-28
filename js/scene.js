@@ -797,8 +797,7 @@
       if (k === 'goal') {
         burst(at, 40, SPARK, 5);
         A.sfx('wish');
-        const w = S.pirate.wishes || ['✨'];
-        say(w[(Math.random() * w.length) | 0]);
+        say(nextWish());
       }
     }
 
@@ -845,6 +844,17 @@
       });
       vox.instanceColor.needsUpdate = true;
       return form;
+    }
+
+    // wishes come out in a shuffled order, and never the same one twice in a row
+    let wishBag = [], lastWish = '';
+    function nextWish() {
+      const all = S.pirate.wishes || ['✨'];
+      if (!wishBag.length) {
+        wishBag = all.slice().sort(() => Math.random() - 0.5);
+        if (wishBag.length > 1 && wishBag[wishBag.length - 1] === lastWish) wishBag.unshift(wishBag.pop());
+      }
+      return (lastWish = wishBag.pop());
     }
 
     function collect(i) {

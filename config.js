@@ -37,12 +37,12 @@ window.SITE = {
   },
 
   tracks: [
-    { name: "WEB EXPLOITATION",    time: "4:04",  blurb: "SQLi, XSS, SSRF, deserialization… bẻ web như bẻ bánh tráng." },
-    { name: "PWN",                 time: "13:37", blurb: "Buffer overflow, ROP, heap. Nói chuyện trực tiếp với bộ nhớ." },
-    { name: "CRYPTOGRAPHY",        time: "3:14",  blurb: "RSA, AES, lattice. Toán học nhưng mà ngầu." },
-    { name: "FORENSICS",           time: "2:56",  blurb: "PCAP, memory dump, stego. Làm thám tử số." },
-    { name: "REVERSE ENGINEERING", time: "6:66",  blurb: "IDA, Ghidra, x64dbg… và đúng rồi, viết keygen như cái trang này." },
-    { name: "MISC / OSINT",        time: "0:42",  blurb: "Mọi thứ còn lại. Thường là phần vui nhất." }
+    { name: "WEB EXPLOITATION",    time: "4:04",  blurb: "Tìm lỗ hổng trong ứng dụng web như SQL injection, XSS, SSRF để lọt vào nơi không được phép vào." },
+    { name: "PWN",                 time: "13:37", blurb: "Khai thác lỗi bộ nhớ của chương trình (buffer overflow, ROP, heap) để chiếm quyền điều khiển máy." },
+    { name: "CRYPTOGRAPHY",        time: "3:14",  blurb: "Tìm chỗ hệ mã hoá bị dùng sai (RSA, AES, hàm băm) rồi giải mã thứ lẽ ra phải bí mật." },
+    { name: "FORENSICS",           time: "2:56",  blurb: "Điều tra số: lần theo dấu vết trong gói tin mạng, bộ nhớ, ổ đĩa và ảnh giấu tin." },
+    { name: "REVERSE ENGINEERING", time: "6:66",  blurb: "Mổ xẻ chương trình không có mã nguồn bằng IDA, Ghidra để hiểu nó chạy ra sao. Keygen sinh ra từ đây." },
+    { name: "MISC / OSINT",        time: "0:42",  blurb: "Truy tìm thông tin từ nguồn công khai, cộng những thử thách lạ không thuộc mảng nào." }
   ],
 
   dates: [
@@ -63,7 +63,7 @@ window.SITE = {
     solved: "Trời đất quỷ thần ơi, ngươi giải được thật rồi! Điền nốt thông tin rồi bấm ACTIVATE, ta sẽ gửi flag đi kèm.",
     closeJoke: "Định bỏ trốn khỏi tàu à? Không dễ thế đâu, thủy thủ!",
     registered: "Arrr! Ta đã ghi tên ngươi vào sổ thủy thủ rồi. Nhớ để ý email nhé!",
-    track: "Tóm được một ngôi sao! {name}: {blurb}",
+    track: "★ {name}: {blurb}",
     hints: {
       pirate:  "Mảnh đầu tiên ta cất ngay trong túi áo. Gõ vào ta là có.",
       back:    "Lão mặt trời lúc nào cũng quay mặt ra cười. Chẳng ai biết sau gáy lão có gì… thử túm lão xoay lại xem.",
@@ -84,9 +84,19 @@ window.SITE = {
     schedule: "Lịch trình chuyến đi: {dates}",
     wishes: [
       "Ngươi ước gì? AC hết bài à? Cứ mơ đi, thủy thủ!",
-      "Điều ước của ngươi là first blood. Ta thích tinh thần đó!",
-      "Ước cả đời không gặp segfault à? Ai mà chẳng ước thế.",
-      "Ước flag nằm sẵn trong /robots.txt à? Ha! Đâu có dễ vậy."
+      "Ước first blood à? Được thôi, miễn là cả đội kia ngủ quên.",
+      "Ước cả đời không gặp segfault? Ngôi sao này ban điều ước, không làm phép màu.",
+      "Ước flag nằm sẵn trong /robots.txt à? Ngây thơ quá, thủy thủ.",
+      "Ngươi vừa thành tâm cầu nguyện với một ngôi sao nhựa. Ta không có gì để nói thêm.",
+      "Ước crypto dễ hơn à? Toán học không nghe thấy lời ước đâu.",
+      "Ước deadline lùi lại? Ngôi sao không có quyền đó. Ban tổ chức cũng không.",
+      "Điều ước của ngươi đã được ghi nhận… vào /dev/null.",
+      "Ước code chạy đúng ngay lần đầu? Đến ngôi sao cũng phải bật cười.",
+      "Lại ước nữa à? Sao băng cũng có rate limit đấy, 429 Too Many Wishes.",
+      "Ước được vào CLB mà khỏi điền form? Keygen ngay bên cạnh kìa, lười vừa thôi.",
+      "Ta từng ước có một con vẹt. Giờ ta có một ngôi sao biết cười. Đời là thế.",
+      "Ước sẽ hiểu ngay cái heap exploit đầu tiên? Ta ước có kho báu, vẫn đang chờ đây.",
+      "Ngôi sao bảo ngươi nên ước ít đi và đọc writeup nhiều hơn."
     ]
   },
 
