@@ -1,0 +1,102 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>EPU Cybersecurity Club</title>
+  <meta name="description" content="EPU Cybersecurity Club: tuyển thành viên đợt 2, 2026.">
+  <meta name="theme-color" content="#000000">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>☠</text></svg>">
+
+  <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+  <link rel="stylesheet" href="css/fonts.css">
+  <link rel="stylesheet" href="css/style.css">
+
+  <script type="importmap">
+  {
+    "imports": {
+      "three": "https://cdn.jsdelivr.net/npm/three@0.170.0/build/three.module.js",
+      "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.170.0/examples/jsm/"
+    }
+  }
+  </script>
+
+  <!-- 1. content (edit this one) → 2. engine -->
+  <script src="config.js"></script>
+  <script src="js/core.js" defer></script>
+  <script src="js/audio.js" defer></script>
+  <script src="js/ctf.js" defer></script>
+  <script src="js/collage.js" defer></script>
+  <script src="js/scene.js" defer></script>
+  <script src="js/main.js" defer></script>
+</head>
+<body>
+  <!-- ☠ 10 flag pieces are hidden in this page. The pirate knows where. -->
+  <!-- layer 0: WebGL world -->
+  <canvas id="gl" aria-hidden="true"></canvas>
+  <!-- layer 1: ghost text -->
+  <div id="ghost" aria-hidden="true"></div>
+  <!-- layer 2: the collage (built from config.js by js/collage.js) -->
+  <div id="stage"></div>
+  <!-- layer 3: viewport-edge blood -->
+  <svg id="blood" aria-hidden="true"></svg>
+  <div id="drops" aria-hidden="true"></div>
+
+  <div id="seam" tabindex="0" role="slider" aria-label="1998 / 2026 split" aria-valuemin="0" aria-valuemax="100"><span>1998</span><b>◂▸</b><span>2026</span></div>
+  <div id="sc" hidden></div>
+
+  <!-- intro / cracktro: the browser needs one key press or tap before it may play sound -->
+  <div id="splash">
+    <canvas id="intro" aria-hidden="true"></canvas>
+    <div class="splash-center">
+      <pre class="ascii" aria-label="EPU">
+███████╗██████╗ ██╗   ██╗
+██╔════╝██╔══██╗██║   ██║
+█████╗  ██████╔╝██║   ██║
+██╔══╝  ██╔═══╝ ██║   ██║
+███████╗██║     ╚██████╔╝
+╚══════╝╚═╝      ╚═════╝ </pre>
+      <p class="splash-line" id="introLine"></p>
+      <div class="splash-load"><i id="introBar"></i></div>
+      <p class="splash-state" id="introState">loading…</p>
+      <button class="splash-go" id="introGo" disabled>PRESS ANY KEY</button>
+    </div>
+  </div>
+
+  <!-- hidden SVG defs shared by every poster element -->
+  <svg width="0" height="0" style="position:absolute" aria-hidden="true">
+    <defs>
+      <linearGradient id="gChrome" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0" stop-color="#ffffff"/>
+        <stop offset=".42" stop-color="#e9e6f2"/>
+        <stop offset=".5" stop-color="#8d86a3"/>
+        <stop offset=".56" stop-color="#ffffff"/>
+        <stop offset=".8" stop-color="#cfcadc"/>
+        <stop offset="1" stop-color="#ffffff"/>
+      </linearGradient>
+      <linearGradient id="gBlood" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0" stop-color="#ff4a2a"/>
+        <stop offset=".55" stop-color="#d40b06"/>
+        <stop offset="1" stop-color="#6e0000"/>
+      </linearGradient>
+      <linearGradient id="gDrip" x1="0" y1="0" x2="1" y2="0">
+        <stop offset="0" stop-color="#8a0000"/>
+        <stop offset=".35" stop-color="#e3150b"/>
+        <stop offset=".5" stop-color="#ff6a50"/>
+        <stop offset=".65" stop-color="#e3150b"/>
+        <stop offset="1" stop-color="#7a0000"/>
+      </linearGradient>
+      <filter id="fGrunge" x="-5%" y="-5%" width="110%" height="110%">
+        <feTurbulence type="fractalNoise" baseFrequency=".9" numOctaves="2" seed="3" result="n"/>
+        <feDisplacementMap in="SourceGraphic" in2="n" scale="4"/>
+      </filter>
+      <filter id="fSticker" x="-15%" y="-15%" width="130%" height="130%">
+        <feMorphology in="SourceAlpha" operator="dilate" radius="5" result="d"/>
+        <feFlood flood-color="#fff"/>
+        <feComposite in2="d" operator="in" result="o"/>
+        <feMerge><feMergeNode in="o"/><feMergeNode in="SourceGraphic"/></feMerge>
+      </filter>
+    </defs>
+  </svg>
+</body>
+</html>
