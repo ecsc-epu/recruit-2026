@@ -21,7 +21,6 @@
   }
   </script>
 
-  <!-- 1. content (edit this one) → 2. engine -->
   <script src="config.js"></script>
   <script src="js/core.js" defer></script>
   <script src="js/audio.js" defer></script>
@@ -32,20 +31,15 @@
 </head>
 <body>
   <!-- ☠ 10 flag pieces are hidden in this page. The pirate knows where. -->
-  <!-- layer 0: WebGL world -->
   <canvas id="gl" aria-hidden="true"></canvas>
-  <!-- layer 1: ghost text -->
   <div id="ghost" aria-hidden="true"></div>
-  <!-- layer 2: the collage (built from config.js by js/collage.js) -->
   <div id="stage"></div>
-  <!-- layer 3: viewport-edge blood -->
   <svg id="blood" aria-hidden="true"></svg>
   <div id="drops" aria-hidden="true"></div>
 
   <div id="seam" tabindex="0" role="slider" aria-label="1998 / 2026 split" aria-valuemin="0" aria-valuemax="100"><span>1998</span><b>◂▸</b><span>2026</span></div>
   <div id="sc" hidden></div>
 
-  <!-- intro / cracktro: the browser needs one key press or tap before it may play sound -->
   <div id="splash">
     <canvas id="intro" aria-hidden="true"></canvas>
     <div class="splash-center">
@@ -63,7 +57,6 @@
     </div>
   </div>
 
-  <!-- hidden SVG defs shared by every poster element -->
   <svg width="0" height="0" style="position:absolute" aria-hidden="true">
     <defs>
       <linearGradient id="gChrome" x1="0" y1="0" x2="0" y2="1">

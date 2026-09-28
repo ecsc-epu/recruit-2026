@@ -1,9 +1,3 @@
-/* ==========================================================================
-   EPU CYBERSECURITY CLUB: single-screen collage
-   Colours are tokens on :root. body.risen = blood mode.
-   Piece positions are in ARTBOARD pixels (1600×900 landscape, 900×1600 portrait);
-   the whole board is scaled to fit the screen, so these numbers never need media queries.
-   ========================================================================== */
 :root {
   --ink: #fdf7ff;
   --win: #e9dcff;
@@ -43,7 +37,6 @@ body {
 }
 .sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
 
-/* ---------------------------------------------------------------- layers */
 #gl { position: fixed; inset: 0; width: 100%; height: 100%; display: block; z-index: 0; touch-action: none; }
 body.hot #gl { cursor: pointer; }
 body.no3d { background: radial-gradient(ellipse at 60% 40%, #3b0a4f, #000 70%); }
@@ -60,7 +53,6 @@ body.no3d #gl, body.no3d #seam { display: none; }
 #blood { position: fixed; left: 0; top: 0; width: 100vw; z-index: 5; pointer-events: none; overflow: visible; filter: drop-shadow(0 3px 2px rgba(0,0,0,.45)); }
 #sc { position: fixed; left: -500px; top: 0; width: 300px; height: 120px; opacity: 0; pointer-events: none; }
 
-/* ------------------------------------------------------------- pieces */
 .piece {
   position: absolute;
   pointer-events: auto;
@@ -82,7 +74,6 @@ body.no3d #gl, body.no3d #seam { display: none; }
 svg.poster { display: block; width: 100%; height: 100%; overflow: visible; font-weight: 400; }
 svg text { font-weight: 400; }
 
-/* title: chrome over blood */
 .p-title { left: 40px; top: 34px; width: 1520px; height: 146px; margin: 0; font-weight: 400; --r: -.6deg; }
 .p-title text { fill: url(#gChrome); stroke: #09060d; stroke-width: 9px; stroke-linejoin: round; paint-order: stroke fill; }
 .p-title .poster { filter: drop-shadow(0 7px 0 #000) drop-shadow(0 0 22px rgba(255, 79, 216, .35)); }
@@ -92,7 +83,6 @@ svg text { font-weight: 400; }
 .p-date text { fill: #fff; stroke: #000; stroke-width: 7px; stroke-linejoin: round; paint-order: stroke fill; }
 .risen .p-date text { fill: #ffd23a; }
 
-/* big bloody text */
 .p-recruit { left: 556px; top: 606px; width: 490px; height: 262px; --r: -3deg; }
 .p-recruit text { fill: url(#gBlood); stroke: #140000; stroke-width: 8px; stroke-linejoin: round; paint-order: stroke fill; filter: url(#fGrunge); }
 .p-recruit text.small { stroke-width: 6px; }
@@ -113,7 +103,6 @@ svg text { font-weight: 400; }
   100% { transform: translateY(110vh) scale(1); opacity: 1; }
 }
 
-/* MS-Paint pirate + speech bubble */
 .p-pirate { left: 58px; top: 196px; width: 272px; height: 340px; --r: -4deg; cursor: pointer; }
 .p-pirate svg { width: 100%; height: 100%; overflow: visible; filter: drop-shadow(6px 8px 0 rgba(0,0,0,.35)); }
 .pirate .ln { stroke: #000; stroke-width: 7px; stroke-linecap: round; stroke-linejoin: round; }
@@ -132,7 +121,6 @@ svg text { font-weight: 400; }
 .p-bubble p::after { content: ""; position: absolute; left: -20px; bottom: 11px; border: 11px solid transparent; border-right: 19px solid #fff; border-left: 0; }
 .p-bubble:not(.on) { visibility: hidden; }
 
-/* blood splats */
 .p-splat1, .p-splat2, .p-vhs, .p-advisory { z-index: 6; }
 .p-splat1 { left: 316px; top: 384px; width: 220px; height: 160px; --r: -12deg; }
 .p-splat2 { left: 408px; top: 498px; width: 160px; height: 122px; --r: 9deg; }
@@ -141,7 +129,6 @@ svg.splat { width: 100%; height: 100%; overflow: visible; filter: url(#fSticker)
 .splat-text text { fill: #fff; stroke: #5a0000; stroke-width: 2px; paint-order: stroke fill; }
 .splat-b .splat-text text { stroke: #000; stroke-width: 4px; }
 
-/* cassette J-card */
 .p-jcard {
   left: 46px; top: 556px; width: 444px; height: 272px; --r: -2.5deg;
   background: #f4f0e6 radial-gradient(circle at 20% 20%, rgba(0,0,0,.05), transparent 60%);
@@ -165,7 +152,6 @@ svg.splat { width: 100%; height: 100%; overflow: visible; filter: url(#fSticker)
 .jc-foot { display: flex; justify-content: space-between; padding: 6px 10px 7px; font-size: 11px; border-top: 2px solid #111; }
 .risen .p-jcard { background: #efe0d8; }
 
-/* keygen window (the join form). Sizes in em so it scales with font-size */
 .p-keygen { left: 1068px; top: 420px; width: 452px; font-size: 13px; --r: 1.5deg; }
 .win {
   background: var(--win); color: var(--win-ink); padding: 3px;
@@ -216,7 +202,7 @@ svg.splat { width: 100%; height: 100%; overflow: visible; filter: url(#fSticker)
 }
 .kg-row select:invalid, .kg-row select:has(option[value=""]:checked) { color: #a99bc8; }
 .kg-row select:focus { outline: 2px dashed var(--accent); outline-offset: -5px; }
-.kg-row:has(select)::after { content: "▼"; position: absolute; right: .65em; font-size: .75em; color: var(--win-ink); pointer-events: none; }
+.kg-row:has(select)::after { content: "▼"; position: absolute; right: .7em; top: 50%; transform: translateY(-50%); font-size: .75em; color: var(--win-ink); pointer-events: none; }
 .kg-row:has(select) { position: relative; }
 .kg-row input:focus { outline: 2px dashed var(--accent); outline-offset: -5px; }
 #kgKey { background: #000; color: #3dff6a; font: 1.6em/1.15 VT323, monospace; letter-spacing: .06em; }
@@ -260,7 +246,6 @@ body.kg-typing #blood, body.kg-typing #drops, body.kg-typing #seam { visibility:
 @keyframes shake { 20%, 60% { translate: -10px 0; } 40%, 80% { translate: 10px 0; } }
 @keyframes boing { 40% { scale: 1.12; } 70% { scale: .96; } }
 
-/* VHS logo + parental advisory */
 .p-vhs {
   left: 30px; top: 838px; width: 200px; height: 50px; --r: -1.5deg;
   display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px;
@@ -287,7 +272,6 @@ body.kg-typing #blood, body.kg-typing #drops, body.kg-typing #seam { visibility:
 }
 .p-under b { font: 12px/1 VT323, monospace; opacity: .6; }
 
-/* ------------------------------------------------------ portrait board */
 #stage.port .p-title { left: 36px; top: 46px; width: 828px; height: 288px; }
 #stage.port .p-date { left: 310px; top: 350px; width: 554px; height: 46px; }
 #stage.port .p-pirate { left: 24px; top: 408px; width: 250px; height: 312px; }
@@ -302,7 +286,6 @@ body.kg-typing #blood, body.kg-typing #drops, body.kg-typing #seam { visibility:
 #stage.port .p-advisory { left: 748px; top: 1500px; }
 #stage.port .p-under { left: 754px; top: 1508px; }
 
-/* ------------------------------------------------------ seam handle */
 #seam {
   position: fixed; z-index: 6; translate: -50% -50%; rotate: var(--rot, 0deg);
   display: flex; align-items: center; gap: .35em; padding: .22em .45em .12em;
@@ -316,7 +299,6 @@ body.kg-typing #blood, body.kg-typing #drops, body.kg-typing #seam { visibility:
 .risen #seam b { color: #000; }
 body:not(.entered) #seam { opacity: 0; pointer-events: none; }
 
-/* ------------------------------------------------------ intro / cracktro */
 #splash { position: fixed; inset: 0; z-index: 50; display: grid; place-items: center; background: #000; cursor: pointer; }
 #intro { position: absolute; inset: 0; width: 100%; height: 100%; }
 .splash-center { position: relative; text-align: center; padding: 16px; max-width: 100%; box-sizing: border-box; }

@@ -1,16 +1,15 @@
-/* Soundtrack, beat tracking and tiny chiptune sound effects. */
 (function () {
   const EPU = window.EPU;
   const M = window.SITE.music;
 
   const A = (EPU.audio = {
-    mode: 'file',   // 'file' | 'soundcloud' | 'none'
+    mode: 'file',
     el: null,
     ctx: null,
     analyser: null,
     playing: false,
-    beat: 0,        // 1 on a beat, decays to 0
-    level: 0,       // overall loudness 0..1
+    beat: 0,
+    level: 0,
     beats: 0
   });
 
@@ -37,7 +36,7 @@
       };
       el.addEventListener('canplaythrough', () => finish(true), { once: true });
       el.addEventListener('error', () => finish(false), { once: true });
-      setTimeout(() => finish(!el.error), 9000); // slow network: go anyway, it keeps buffering
+      setTimeout(() => finish(!el.error), 9000);
       el.load();
     });
 
@@ -47,7 +46,6 @@
     return Math.min(1, el.buffered.end(el.buffered.length - 1) / el.duration);
   };
 
-  // Must run inside a click / key handler (browser autoplay rules).
   A.start = async () => {
     const Ctx = window.AudioContext || window.webkitAudioContext;
     if (!A.ctx && Ctx) {
@@ -57,7 +55,6 @@
       fxGain.connect(A.ctx.destination);
     }
     if (A.mode === 'file') {
-      // Web Audio may only read the samples of same-origin files served over http(s).
       const sameOrigin = new URL(M.src, location.href).origin === location.origin;
       if (!A.analyser && A.ctx && location.protocol !== 'file:' && sameOrigin) {
         try {
@@ -107,7 +104,6 @@
       }
       avg = avg * 0.93 + bass * 0.07;
     } else if (A.playing) {
-      // no analysis possible (file:// or SoundCloud): follow the song's tempo instead
       const t = A.el ? A.el.currentTime : (now - A.t0) / 1000;
       const ph = (t * (M.bpm || 128)) / 60;
       const whole = Math.floor(ph);
@@ -121,7 +117,6 @@
     A.beat *= Math.exp(-dt * 7);
   };
 
-  // n samples in -1..1 for the keygen oscilloscope
   A.waveform = (n) => {
     const out = new Float32Array(n);
     if (A.analyser && wave) {
@@ -138,7 +133,6 @@
     return out;
   };
 
-  // --- chiptune sound effects -------------------------------------------------
   function tone(freqHz, dur, type = 'square', vol = 0.5, slide = 0, delay = 0) {
     const c = A.ctx;
     const t = c.currentTime + delay;
@@ -197,7 +191,6 @@
     }
   };
 
-  // RISEN mode slows the tape down (chopped & screwed) and pitches it down.
   EPU.on('risen', (on) => {
     const el = A.el;
     if (!el) return;
@@ -208,7 +201,7 @@
     cancelAnimationFrame(rateAnim);
     const step = () => {
       const k = Math.min(1, (performance.now() - t0) / 700);
-      try { el.playbackRate = from + (to - from) * (1 - (1 - k) ** 3); } catch (e) { /* some browsers clamp */ }
+      try { el.playbackRate = from + (to - from) * (1 - (1 - k) ** 3); } catch (e) { }
       if (k < 1) rateAnim = requestAnimationFrame(step);
     };
     step();

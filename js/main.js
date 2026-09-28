@@ -1,5 +1,3 @@
-/* Boot: build the collage, run the cracktro intro while things load, start the music on
-   the first key press / tap (browsers require one), then run the main loop. */
 (function () {
   const EPU = window.EPU;
   const S = window.SITE;
@@ -10,7 +8,6 @@
   EPU.ui.layout();
   addEventListener('resize', () => EPU.ui.layout());
 
-  /* --------------------------------------------- cracktro: stars, copper bars, sine scroller */
   const cv = $('#intro');
   const cx = cv.getContext('2d');
   let introOn = true;
@@ -58,7 +55,6 @@
     }
   }
 
-  /* ---------------------------------------------------------------- loading */
   const bar = $('#introBar'), stateEl = $('#introState'), go = $('#introGo');
   $('#introLine').textContent = S.intro.line;
   const done = { fonts: 0, audio: 0, scene: 0 };
@@ -73,7 +69,6 @@
     done.fonts = 1;
     showProgress();
     EPU.ui.fitPosters();
-    // a font (or a Vietnamese subset) that arrives late: re-fit the poster text
     document.fonts.addEventListener('loadingdone', () => EPU.ui.fitPosters());
   });
 
@@ -130,7 +125,6 @@
   $('#splash').addEventListener('pointerdown', enter);
   go.addEventListener('click', enter);
 
-  /* ---------------------------------------------------------- keyboard */
   let typed = '';
   addEventListener('keydown', (e) => {
     if (!EPU.state.entered) {
@@ -149,7 +143,6 @@
     }
   });
 
-  /* -------------------------------------------------------------- loop */
   const aim = { x: 0, y: 0 };
   addEventListener(
     'pointermove',

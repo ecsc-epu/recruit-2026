@@ -1,14 +1,9 @@
-/* The 3D world behind the collage (three.js, everything procedural):
-   starfield · rainbow roads · smiley star · voxel heart · devil skull with a gold grill ·
-   pink track-stars orbiting the smiley · rainbow cursor trail · particle bursts ·
-   post-FX that splits the screen into 1998 (1-bit dither) and 2026 (bloom). */
 (function () {
   const EPU = window.EPU;
   const S = window.SITE;
 
   EPU.scene = { init };
 
-  // Where 3D things sit, in artboard pixels: [x, y, depth, radius]. Same boards as the collage.
   const COMPO = {
     land: {
       mascot: [800, 400, 0, 150],
@@ -16,7 +11,7 @@
       skull: [1196, 318, 0, 90],
       goal: [1343, 262, -4, 24],
       star: 24,
-      heartText: [1316, 398, 1.5, 9], // where the heart's voxels spell their piece: x, y, depth, cell size
+      heartText: [1410, 372, 1.5, 8],
       roadA: { w: 170, pts: [[-520, 1180, 2.2], [120, 940, 1.6], [520, 700, 0.6], [800, 470, -1.4], [1150, 250, -4], [1600, 40, -9], [2300, -260, -16]] },
       roadB: { w: 46, pts: [[-440, 620, -2.6], [60, 470, -3.2], [420, 250, -4], [760, -40, -6], [1000, -320, -8]] }
     },
@@ -26,13 +21,12 @@
       skull: [716, 540, 0, 80],
       goal: [130, 790, -4, 24],
       star: 22,
-      heartText: [560, 600, 1.5, 8],
+      heartText: [655, 664, 1.5, 10, '#1b0f33'],
       roadA: { w: 160, pts: [[-320, 1560, 2.2], [80, 1250, 1.2], [360, 1000, 0], [560, 820, -1.5], [720, 620, -3.5], [920, 340, -7], [1300, -120, -13]] },
       roadB: { w: 40, pts: [[-400, 1060, -2.6], [-40, 900, -3.2], [130, 790, -4]] }
     }
   };
 
-  // exposed so other pages (the promo posters in /media) can re-arrange the 3D world before init()
   EPU.scene.COMPO = COMPO;
 
   async function init(canvas) {
@@ -52,8 +46,6 @@
     const small = coarse || Math.min(innerWidth, innerHeight) < 640;
     const say = (t) => EPU.ui.say(t);
 
-    /* ---------------------------------------------------------------- renderer
-       Modest resolution and no MSAA: the dither / bloom hide it and laptops stay smooth. */
     const renderer = new THREE.WebGLRenderer({ canvas, antialias: false, powerPreference: 'high-performance' });
     renderer.setPixelRatio(Math.min(devicePixelRatio || 1, small ? 1 : 1.25));
     renderer.setSize(innerWidth, innerHeight, false);
@@ -79,14 +71,13 @@
     scene.add(rimLight);
 
     const U = { uTime: { value: 0 }, uBeat: { value: 0 }, uRisen: { value: 0 }, uPR: { value: renderer.getPixelRatio() } };
-    const HSV = /* glsl */ `
+    const HSV = `
       vec3 hsv(float h, float s, float v) {
         vec3 p = abs(fract(vec3(h) + vec3(0.0, 2.0 / 3.0, 1.0 / 3.0)) * 6.0 - 3.0);
         return v * mix(vec3(1.0), clamp(p - 1.0, 0.0, 1.0), s);
       }`;
-    const BASIC_VERT = /* glsl */ `varying vec2 vUv; void main() { vUv = uv; gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0); }`;
+    const BASIC_VERT = `varying vec2 vUv; void main() { vUv = uv; gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0); }`;
 
-    /* ------------------------------------------------ artboard ↔ world mapping */
     const halfH = (z) => (CAM_Z - z) * Math.tan(THREE.MathUtils.degToRad(camera.fov / 2));
     function art(ax, ay, z = 0) {
       const L = EPU.layout;
@@ -97,7 +88,6 @@
     }
     const artSize = (px, z = 0) => ((px * EPU.layout.s) / EPU.layout.H) * 2 * halfH(z);
 
-    /* ----------------------------------------------------------------- stars */
     {
       const count = small ? 2500 : 5000;
       const g = new THREE.BufferGeometry();
@@ -122,7 +112,7 @@
       g.setAttribute('aSeed', new THREE.BufferAttribute(seed, 1));
       const m = new THREE.ShaderMaterial({
         uniforms: { uTime: U.uTime, uBeat: U.uBeat, uRisen: U.uRisen, uPR: U.uPR },
-        vertexShader: /* glsl */ `
+        vertexShader: `
           attribute vec3 aColor; attribute float aSize; attribute float aSeed;
           uniform float uTime, uBeat, uPR;
           varying vec3 vColor; varying float vTw;
@@ -133,7 +123,7 @@
             vColor = aColor;
             gl_PointSize = aSize * uPR * clamp(60.0 / -mv.z, 0.8, 4.0) * (0.9 + 0.2 * vTw + uBeat * 0.25);
           }`,
-        fragmentShader: /* glsl */ `
+        fragmentShader: `
           uniform float uRisen;
           varying vec3 vColor; varying float vTw;
           void main() {
@@ -151,8 +141,7 @@
       scene.add(pts);
     }
 
-    /* ------------------------------------------------------ rainbow roads */
-    const roadFrag = /* glsl */ `
+    const roadFrag = `
       uniform float uTime, uBeat, uRisen, uStripes;
       varying vec2 vUv;
       ${HSV}
@@ -205,7 +194,6 @@
     roadA.frustumCulled = roadB.frustumCulled = false;
     scene.add(roadA, roadB);
 
-    /* ------------------------------------------------------------ shapes */
     function starShape(n, ro, ri) {
       const s = new THREE.Shape();
       for (let i = 0; i < n * 2; i++) {
@@ -237,7 +225,6 @@
       new THREE.Sprite(new THREE.SpriteMaterial({ map: glowTex, color, transparent: true, opacity, blending: THREE.AdditiveBlending, depthWrite: false }));
     const PINK = new THREE.Color(0xff9ad5), PINK_E = new THREE.Color(0xff3fa8), BLOOD = new THREE.Color(0xff2a14), BLOOD_E = new THREE.Color(0x7a0000);
 
-    // invisible spheres used for clicking: far cheaper than testing every triangle / voxel
     const proxyGeo = new THREE.SphereGeometry(1, 12, 8);
     const proxyMat = new THREE.MeshBasicMaterial({ visible: false });
     const proxies = [];
@@ -249,7 +236,6 @@
       proxies.push(m);
     }
 
-    /* ------------------------------------------------------- smiley star */
     const mascot = new THREE.Group();
     mascot.userData.kind = 'mascot';
     const inner = new THREE.Group();
@@ -282,7 +268,6 @@
       face.add(blush);
       blushes.push(blush);
     }
-    // a dense patch that hugs the ball; fn maps (u, v) in 0..1 (v = 0 at top) to a 2D outline
     function surfacePatch(cx, cy, fn, segX, segY, lift, mat) {
       const g = new THREE.PlaneGeometry(1, 1, segX, segY);
       const p = g.attributes.position;
@@ -297,7 +282,6 @@
       g.computeVertexNormals();
       return new THREE.Mesh(g, mat);
     }
-    // D-shaped grin (flat top, round bottom) + tongue
     face.add(surfacePatch(0, -0.16, (u, v) => [(u * 2 - 1) * 0.42 * Math.sqrt(1 - v * v), -v * 0.3], 28, 12, 0.004, inkMat));
     face.add(
       surfacePatch(0, -0.37, (u, v) => [(u * 2 - 1) * 0.18 * Math.sqrt(Math.max(0, 1 - (2 * v - 1) ** 2)), -(2 * v - 1) * 0.085], 16, 10, 0.009,
@@ -325,7 +309,6 @@
     });
     const backPic = EPU.ctf.picture('back');
     if (backPic) {
-      // mirrored so it reads correctly once he's turned around; kept small enough that the star doesn't cover it
       const on = [];
       for (let r = 0; r < backPic.h; r++) for (let c = 0; c < backPic.w; c++) if (backPic.bits[r * backPic.w + c]) on.push([c, r]);
       const cell = 1.2 / backPic.w;
@@ -345,7 +328,6 @@
     proxy(mascot, 1.45);
     scene.add(mascot);
 
-    /* --------------------------------------------------------- voxel heart */
     const heart = new THREE.Group();
     heart.userData.kind = 'heart';
     const N = small ? 10 : 12, SPAN = 1.3, STEP = (2 * SPAN) / (N - 1);
@@ -387,7 +369,6 @@
     proxy(heart, 1.25);
     scene.add(heart);
 
-    /* ------------------------------------------------------ devil skull */
     const skull = new THREE.Group();
     skull.userData.kind = 'skull';
     const skullMat = new THREE.MeshStandardMaterial({ color: 0xe0140b, emissive: 0x3a0000, roughness: 0.5, metalness: 0.05 });
@@ -451,7 +432,6 @@
     proxy(skull, 1.25);
     scene.add(skull);
 
-    /* ------------------------------------------- goal star + track stars */
     const goal = new THREE.Group();
     goal.userData.kind = 'goal';
     const goalMat = new THREE.MeshStandardMaterial({ color: PINK, emissive: PINK_E, emissiveIntensity: 0.9, roughness: 0.6 });
@@ -475,7 +455,6 @@
       return g;
     });
 
-    /* --------------------------------------------------------- bursts */
     const PMAX = 600;
     const pPos = new Float32Array(PMAX * 3), pVel = new Float32Array(PMAX * 3), pCol = new Float32Array(PMAX * 3);
     const pLife = new Float32Array(PMAX), pDur = new Float32Array(PMAX).fill(1), pSize = new Float32Array(PMAX);
@@ -488,7 +467,7 @@
       pGeo,
       new THREE.ShaderMaterial({
         uniforms: { uPR: U.uPR },
-        vertexShader: /* glsl */ `
+        vertexShader: `
           attribute vec3 aColor; attribute float aLife; attribute float aSize;
           uniform float uPR; varying vec3 vC; varying float vL;
           void main() {
@@ -497,7 +476,7 @@
             gl_Position = projectionMatrix * mv;
             gl_PointSize = aSize * uPR * (40.0 / -mv.z) * (0.3 + aLife);
           }`,
-        fragmentShader: /* glsl */ `
+        fragmentShader: `
           varying vec3 vC; varying float vL;
           void main() {
             vec2 c = gl_PointCoord - 0.5;
@@ -535,9 +514,6 @@
       alive = PMAX;
     }
 
-    /* ---------------------------------------------------- cursor trail
-       A nyan-cat ribbon that follows the pointer. It lives in the 3D layer, so it passes under
-       the stickers and windows (never over text); it only updates while it's visible. */
     const TRAIL = 44, TRAIL_Z = 2.2, TRAIL_AGE = 0.55;
     const trail = [];
     const tPos = new Float32Array(TRAIL * 6), tUv = new Float32Array(TRAIL * 4);
@@ -552,11 +528,11 @@
       new THREE.ShaderMaterial({
         uniforms: { uRisen: U.uRisen },
         vertexShader: BASIC_VERT,
-        fragmentShader: /* glsl */ `
+        fragmentShader: `
           uniform float uRisen; varying vec2 vUv;
           ${HSV}
           void main() {
-            float band = floor(vUv.y * 6.0) / 5.0;              // chunky nyan-cat bands
+            float band = floor(vUv.y * 6.0) / 5.0;
             vec3 c = pow(hsv(band * 0.78, 0.95, 1.0), vec3(2.2)) * 1.9;
             c = mix(c, vec3(1.5, 0.04, 0.02) * (1.2 - abs(vUv.y - 0.5)), uRisen);
             float a = (1.0 - vUv.x) * step(0.02, vUv.y) * step(vUv.y, 0.98);
@@ -585,7 +561,7 @@
         const k = Math.min(i, n - 1);
         const a = trail[Math.max(0, k - 1)].p, b = trail[Math.min(n - 1, k + 1)].p;
         const dx = a.x - b.x, dy = a.y - b.y, len = Math.hypot(dx, dy) || 1;
-        const life = i < n ? 1 - trail[k].age / TRAIL_AGE : 0; // extra vertices collapse onto the tail
+        const life = i < n ? 1 - trail[k].age / TRAIL_AGE : 0;
         const hw = (w / 2) * Math.sqrt(Math.max(0, life));
         const px = (-dy / len) * hw, py = (dx / len) * hw;
         const pt = trail[k].p;
@@ -597,13 +573,12 @@
       tGeo.attributes.uv.needsUpdate = true;
     }
 
-    /* --------------------------------------------------------- post FX */
     const eraPic = EPU.ctf.picture('era');
     const secretTex = (() => {
       const w = eraPic ? eraPic.w : 1, h = eraPic ? eraPic.h : 1;
       const data = new Uint8Array(w * h * 4);
       for (let i = 0; i < w * h; i++) data.set(eraPic && eraPic.bits[i] ? [255, 255, 255, 255] : [0, 0, 0, 255], i * 4);
-      const tx = new THREE.DataTexture(data, w, h); // row 0 = top row of the letters
+      const tx = new THREE.DataTexture(data, w, h);
       tx.magFilter = tx.minFilter = THREE.NearestFilter;
       tx.needsUpdate = true;
       return tx;
@@ -624,7 +599,7 @@
         uSecretTexel: { value: new THREE.Vector2(0.5 / (eraPic ? eraPic.w : 1), 0.5 / (eraPic ? eraPic.h : 1)) }
       },
       vertexShader: BASIC_VERT,
-      fragmentShader: /* glsl */ `
+      fragmentShader: `
         uniform sampler2D tDiffuse, tSecret;
         uniform vec4 uSecret;
         uniform vec2 uSecretTexel;
@@ -635,7 +610,7 @@
         float bayer2(vec2 a) { a = floor(a); return fract(a.x / 2.0 + a.y * a.y * 0.75); }
         #define bayer4(a) (bayer2(0.5 * (a)) * 0.25 + bayer2(a))
         #define bayer8(a) (bayer4(0.5 * (a)) * 0.25 + bayer2(a))
-        vec3 grade(vec3 c) {                       // RISEN: black → blood → bone
+        vec3 grade(vec3 c) {
           float l = dot(c, vec3(0.299, 0.587, 0.114));
           vec3 a = vec3(0.03, 0.0, 0.0), b = vec3(0.82, 0.03, 0.02), w = vec3(1.0, 0.9, 0.82);
           return l < 0.5 ? mix(a, b, l * 2.0) : mix(b, w, (l - 0.5) * 2.0);
@@ -649,7 +624,6 @@
           float seamX = uSeam + (uv.y - 0.5) * uTilt + (hash(vec2(row, 7.0)) - 0.5) * 0.012;
           vec3 col;
           if (uv.x < seamX) {
-            // 1998: photocopied keygen NFO — inverted 1-bit ink, 8-colour dither where it's colourful
             vec2 cell = floor(frag / uPixel);
             vec3 c = texture2D(tDiffuse, (cell + 0.5) * uPixel / uRes).rgb;
             float l = dot(c, vec3(0.299, 0.587, 0.114));
@@ -660,7 +634,6 @@
             vec3 pal = step(vec3(th), c);
             col = mix(mono, pal, smoothstep(0.18, 0.4, sat));
             col = mix(col, grade(col), uRisen);
-            // ink that only exists in 1998: paper outline + dark letters
             if (uSecret.z > 0.0) {
               vec2 su = (uv - uSecret.xy) / uSecret.zw;
               if (su.x >= 0.0 && su.x <= 1.0 && su.y >= 0.0 && su.y <= 1.0) {
@@ -673,7 +646,6 @@
               }
             }
           } else {
-            // 2026: bloom, a hint of chromatic fringe, grain, vignette
             vec2 d = (uv - 0.5) * 0.0018;
             col = vec3(texture2D(tDiffuse, uv + d).r, texture2D(tDiffuse, uv).g, texture2D(tDiffuse, uv - d).b);
             col = mix(col, grade(col) * 1.1, uRisen);
@@ -688,8 +660,6 @@
     };
     const composer = new EffectComposer(renderer);
     composer.addPass(new RenderPass(scene, camera));
-    // threshold 1.4: only truly hot pixels glow (road stripes, stars, sparks), not lit surfaces.
-    // Small screens get less: the blur kernels are in pixels, so the glow spreads relatively further.
     const BLOOM = small ? { s: 0.4, r: 0.12 } : { s: 0.6, r: 0.3 };
     const bloom = new UnrealBloomPass(new THREE.Vector2(innerWidth, innerHeight), BLOOM.s, BLOOM.r, 1.4);
     composer.addPass(bloom);
@@ -697,7 +667,6 @@
     const era = new ShaderPass(ERA);
     composer.addPass(era);
 
-    /* --------------------------------------------------------- layout */
     function place() {
       const C = COMPO[EPU.layout.mode];
       const put = (obj, [x, y, z, r], unit) => {
@@ -739,7 +708,6 @@
     EPU.on('layout', resize);
     resize();
 
-    /* ------------------------------------------------------- picking */
     const ray = new THREE.Raycaster();
     const ndc = new THREE.Vector2(9, 9);
     const ndcAll = new THREE.Vector2(9, 9);
@@ -813,7 +781,7 @@
       if (k === 'mascot') {
         jumpT = 0;
         spinV += 16;
-        holdT = 9; // a click-spin always comes back to face you
+        holdT = 9;
         burst(at, 40, SPARK, 5, 1.2);
         A.sfx('boing');
         EPU.emit('mascot:click');
@@ -834,7 +802,6 @@
       }
     }
 
-    // the heart explodes; if its piece is a picture, the voxels regroup into those letters for a few seconds
     const WHITE = new THREE.Color(0xffffff);
     function popHeart(at) {
       if (hv.active) return;
@@ -850,21 +817,21 @@
         hv.rot[j] = hv.rot[j + 1] = hv.rot[j + 2] = 0;
       }
       hv.form = planHeartText();
-      if (!hv.form) EPU.ctf.reveal('heart'); // a plain text piece: the pirate reads it out
+      if (!hv.form) EPU.ctf.reveal('heart');
       burst(at, 40, ['#ff3f9a', '#c23cff', '#ffffff'].map((c) => new THREE.Color(c)), 4);
       A.sfx('boom');
     }
     function planHeartText() {
       const pic = EPU.ctf.picture('heart');
       if (!pic) return null;
-      const [ax, ay, az, cellPx] = COMPO[EPU.layout.mode].heartText;
+      const [ax, ay, az, cellPx, ink = '#ffffff'] = COMPO[EPU.layout.mode].heartText;
       const center = art(ax, ay, az), pitch = artSize(cellPx, az);
       heart.scale.setScalar(heart.userData.base);
       heart.updateMatrixWorld(true);
       const on = [];
       for (let r = 0; r < pic.h; r++) for (let c = 0; c < pic.w; c++) if (pic.bits[r * pic.w + c]) on.push([c, r]);
       const order = homes.map((_, i) => i).sort(() => Math.random() - 0.5);
-      const form = new Float32Array(homes.length * 4); // offset xyz + scale, per voxel
+      const form = new Float32Array(homes.length * 4);
       const cellScale = ((pitch / heart.userData.base) * 0.92) / (STEP * 0.9);
       const v = new THREE.Vector3();
       order.forEach((i, k) => {
@@ -873,7 +840,7 @@
           v.set(center.x + (c + 0.5 - pic.w / 2) * pitch, center.y - (r + 0.5 - pic.h / 2) * pitch, center.z);
           heart.worldToLocal(v);
           form.set([v.x - homes[i].x, v.y - homes[i].y, v.z - homes[i].z, cellScale], i * 4);
-          vox.setColorAt(i, WHITE);
+          vox.setColorAt(i, WHITE.set(ink));
         } else form.set([0, 0, 0, 0.001], i * 4);
       });
       vox.instanceColor.needsUpdate = true;
@@ -884,7 +851,7 @@
       const g = trackStars[i];
       if (g.userData.gone) return;
       burst(g.getWorldPosition(new THREE.Vector3()), 40, SPARK, 5);
-      g.userData.gone = 7; // seconds until it respawns
+      g.userData.gone = 7;
       A.sfx('star');
       EPU.state.collected.add(i);
       EPU.emit('star:collect', i);
@@ -913,7 +880,6 @@
       if (place === 'era') EPU.ui.setSeam(1);
     });
 
-    /* --------------------------------------------- automatic quality drop */
     let slowFor = 0, quality = 0;
     function adapt(dt) {
       if (!dolly || quality >= 2 || EPU.scene.fixedQuality) return;
@@ -930,7 +896,6 @@
       }
     }
 
-    /* ---------------------------------------------------------- frame */
     const colTmp = new THREE.Color();
     let orbitT = 0, lastStar = -1;
     function frame(dt, t) {
@@ -943,14 +908,12 @@
       U.uRisen.value = risenAmt;
       scene.background.setRGB(0.012 * risenAmt, 0, 0);
 
-      // camera: dolly-in after the intro + a gentle mouse parallax
       if (dolly) fade = damp(fade, 1, 2.2, dt);
       camera.position.x = damp(camera.position.x, EPU.state.mx * 0.35, 3, dt);
       camera.position.y = damp(camera.position.y, -EPU.state.my * 0.2, 3, dt);
       camera.position.z = damp(camera.position.z, dolly ? CAM_Z : CAM_Z + 6, 1.6, dt);
       camera.lookAt(0, 0, 0);
 
-      // hover: only re-test after the pointer moves (or a few times a second: things orbit)
       pickAge += dt;
       if (pointer.down) hover = pointer.target;
       else if (pickDirty || pickAge > 0.2) {
@@ -967,7 +930,6 @@
         EPU.emit('star:hover', curStar);
       }
 
-      // smiley
       const mb = mascot.userData.base;
       jumpT = Math.min(1, jumpT + dt * 1.6);
       mascot.position.y = mascot.userData.home.y + Math.sin(jumpT * Math.PI) * mb * 0.9 + Math.sin(t * 1.2) * mb * 0.03;
@@ -986,7 +948,6 @@
         inner.rotation.y += spinV * dt;
         spinV *= Math.exp(-dt * 2.4);
         holdT += dt;
-        // after a drag he stays turned for a few seconds, then faces you again
         if (holdT > 6 && Math.abs(spinV) < 0.6) {
           inner.rotation.y = damp(inner.rotation.y, Math.round(inner.rotation.y / (Math.PI * 2)) * Math.PI * 2, 3, dt);
           inner.rotation.x = damp(inner.rotation.x, 0, 2.5, dt);
@@ -1020,10 +981,9 @@
       halo.material.color.set(0xff4fd8).lerp(colTmp.set(0xff1a00), risenAmt);
       horns.forEach((hn) => hn.scale.setScalar(Math.max(0.001, risenAmt)));
 
-      // track stars orbit the smiley like a ring (near side lower)
       orbitT += dt * (hoverStar >= 0 ? 0.15 : 1);
-      const [ringK, ringTilt] = COMPO[EPU.layout.mode].orbit || [1.72, 0.28]; // ring radius (× smiley) and tilt
-      const Ro = mb * ringK; // 1.72 stays clear of the stickers and the keygen
+      const [ringK, ringTilt] = COMPO[EPU.layout.mode].orbit || [1.72, 0.28];
+      const Ro = mb * ringK;
       const home = mascot.userData.home;
       trackStars.forEach((g, i) => {
         const u = g.userData;
@@ -1043,13 +1003,11 @@
         u.glow.material.color.set(0xff5fc8).lerp(colTmp.set(0xff1a00), risenAmt);
       });
 
-      // goal star
       goal.rotation.z += dt * 0.3;
       goal.scale.setScalar(goal.userData.base * (1 + beat * 0.1 + (hk === 'goal' ? 0.25 : 0)));
       goalMat.color.copy(PINK).lerp(BLOOD, risenAmt);
       goalMat.emissive.copy(PINK_E).lerp(BLOOD_E, risenAmt);
 
-      // heart: pulses on the beat, voxels fly apart on click and spring back
       const hoverH = hk === 'heart' ? 1 : 0;
       if (!hv.form) heart.rotation.y += dt * (0.5 + hoverH * 2);
       heart.scale.setScalar(heart.userData.base * (hv.form ? 1 : 1 + beat * 0.12 + hoverH * 0.06));
@@ -1062,7 +1020,7 @@
           EPU.ctf.reveal('heart');
         }
         if (hv.form && !forming) {
-          hv.form = null; // show's over: colours back, voxels home
+          hv.form = null;
           voxColor.forEach((c, i) => vox.setColorAt(i, c));
           vox.instanceColor.needsUpdate = true;
         }
@@ -1089,7 +1047,6 @@
         setVoxels();
       }
 
-      // skull
       const hoverS = hk === 'skull' ? 1 : 0;
       const sp = project(skull.userData.home);
       const sx = clamp((ndcAll.x - ((sp.x / innerWidth) * 2 - 1)) * 1.2, -1, 1);
@@ -1101,7 +1058,6 @@
       jaw.rotation.x = hoverS ? 0.1 + 0.2 * Math.abs(Math.sin(t * 22)) : 0.04 + beat * 0.25;
       pupilMat.emissiveIntensity = 2 + beat * 2 + risenAmt * 4 + hoverS * 3;
 
-      // particles (skipped entirely when none are alive)
       if (alive > 0) {
         let n = 0;
         const dmp = Math.exp(-dt * 1.8);
@@ -1123,7 +1079,6 @@
 
       updateTrail(dt);
 
-      // post
       glitch = Math.max(0, glitch - dt * 2.5);
       era.uniforms.uSeam.value = EPU.state.seam;
       era.uniforms.uTime.value = t;

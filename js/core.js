@@ -1,4 +1,3 @@
-/* Shared namespace, a tiny event bus and small helpers used by every other file. */
 (function () {
   const EPU = (window.EPU = window.EPU || {});
   const handlers = {};
@@ -9,10 +8,10 @@
   EPU.state = {
     entered: false,
     risen: false,
-    collected: new Set(), // indexes of caught track stars
-    seam: 0.35,           // 1998 | 2026 split, 0..1 of the viewport width
+    collected: new Set(),
+    seam: 0.35,
     seamTouched: false,
-    mx: 0, my: 0          // smoothed pointer, -1..1
+    mx: 0, my: 0
   };
 
   EPU.util = {
@@ -32,7 +31,6 @@
     esc: (s) => String(s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c])),
     clamp: (v, a, b) => Math.min(b, Math.max(a, v)),
     lerp: (a, b, t) => a + (b - a) * t,
-    // deterministic random so the collage looks the same on every visit
     rng(seed) {
       return () => {
         seed = (seed + 0x6d2b79f5) | 0;

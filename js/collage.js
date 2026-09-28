@@ -1,22 +1,17 @@
-/* The 2D collage: a fixed-size artboard (1600×900 landscape / 900×1600 portrait) scaled
-   to fit the screen, so the composition stays the same on every device. Pieces are built
-   from config.js and can be dragged around. The MS-Paint pirate is the only voice: every
-   hint, found flag piece and track description appears in his speech bubble. */
 (function () {
   const EPU = window.EPU;
   const S = window.SITE;
   const { $, $$, svg, esc, clamp, rng } = EPU.util;
 
   const BOARDS = { land: { w: 1600, h: 900 }, port: { w: 900, h: 1600 } };
-  const SEAM_ART = { land: 560, port: 300 }; // default 1998|2026 split, artboard x
-  const SEAM_Y = { land: 352, port: 876 };   // where the handle sits on the seam, artboard y
+  const SEAM_ART = { land: 560, port: 300 };
+  const SEAM_Y = { land: 352, port: 876 };
   const SEAM_TILT = 0.06;
 
   const stage = $('#stage');
   const ui = (EPU.ui = {});
   let zTop = 20;
 
-  /* ------------------------------------------------------------------ build */
   function build() {
     const ctf = EPU.ctf;
     const underN = ctf.where.sticker;
@@ -97,7 +92,6 @@
     seamHandle();
   }
 
-  /* ------------------------------------------------------------- MS-Paint pirate */
   function pirateSVG() {
     return `<svg viewBox="0 0 280 350" class="pirate" aria-label="MS Paint pirate">
       <g filter="url(#fSticker)">
@@ -175,8 +169,7 @@
     p.addEventListener('tap', () => {
       ui.talked = true;
       hop();
-      if (ctf.where.pirate && !ctf.found.has(ctf.where.pirate)) return ctf.reveal('pirate'); // his own piece
-      // two hints for pieces still hidden, then one line about the club
+      if (ctf.where.pirate && !ctf.found.has(ctf.where.pirate)) return ctf.reveal('pirate');
       if (streak >= 2) {
         streak = 0;
         return say(about[aboutI++ % about.length]);
@@ -190,7 +183,6 @@
     EPU.on('ctf:solved', () => ui.say(P.solved));
   }
 
-  /* ----------------------------------------------------------------- splats */
   function splat(root, seed, w, h, lines, cls) {
     const r = rng(seed);
     const cx = w / 2, cy = h / 2, R = Math.min(w, h * 1.3) * 0.36;
@@ -224,7 +216,6 @@
     };
   }
 
-  /* -------------------------------------------------------- poster typography */
   const mctx = document.createElement('canvas').getContext('2d');
   function measure(text, font) {
     mctx.font = `100px ${font}`;
@@ -232,8 +223,6 @@
     return { l: m.actualBoundingBoxLeft, r: m.actualBoundingBoxRight, a: m.actualBoundingBoxAscent, d: m.actualBoundingBoxDescent };
   }
 
-  // Stack lines to fill a box: each line is stretched to the box width, then the whole
-  // stack is scaled down if it's too tall. Returns the placed lines.
   function fitLines(g, lines, bx, by, bw, bh, gapRatio = 0.08) {
     const ms = lines.map((ln) => ({ ...ln, m: measure(ln.text, ln.font) }));
     let ks = ms.map((ln) => bw / (ln.m.l + ln.m.r));
@@ -255,7 +244,6 @@
     });
   }
 
-  // drips that hang from the actual bottoms of the letters
   function lettersDrips(g, line, count, seed, scale = 1) {
     const r = rng(seed);
     const c = document.createElement('canvas');
@@ -301,7 +289,6 @@
       ['.p-date', (g, w, h) => fitLines(g, [{ text: S.dateLine, font: 'Anton' }], 0, 0, w, h)],
       ['.p-recruit', (g, w, h) => {
         const lines = fitLines(g, [{ text: S.recruit.big, font: 'Anton', cls: 'big' }, { text: S.recruit.small, font: 'Anton', cls: 'small' }], 0, 0, w, h * 0.78, 0.07);
-        // drips from the top line run behind the second line, so both lines stay readable
         const back = svg('g', { class: 'drips' }), front = svg('g', { class: 'drips' });
         g.insertBefore(back, g.querySelectorAll('text')[1]);
         g.appendChild(front);
@@ -322,7 +309,6 @@
     $$('svg.splat').forEach((s) => s._fit && s._fit());
   }
 
-  /* ------------------------------------------ blood along the top + falling drops */
   function buildBlood() {
     const b = $('#blood');
     const W = innerWidth;
@@ -346,7 +332,6 @@
       g.appendChild(drip(x, band - 2, w, len));
       if (long) longOnes.push([x, band + len, w]);
     }
-    // a few drops fall from the long drips (CSS transform only: cheap)
     $('#drops').innerHTML = longOnes
       .filter((_, i) => i % 2 === 0)
       .slice(0, 5)
@@ -354,7 +339,6 @@
       .join('');
   }
 
-  /* ---------------------------------------------------------------- dragging */
   function draggable(piece, handle) {
     handle.addEventListener('pointerdown', (e) => {
       if (e.button !== 0) return;
@@ -399,7 +383,6 @@
     });
   }
 
-  /* ------------------------------------------------------------------ keygen */
   function keygen() {
     const ctf = EPU.ctf;
     const win = $('.p-keygen');
@@ -407,9 +390,8 @@
     const fields = [name, id, mail, phone, track, key];
     let sent = false;
     const EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
-    const phoneOk = (v) => /^(?:\+?84|0)\d{9}$/.test(v.replace(/[\s.()-]/g, '')); // Vietnamese numbers: 0xxxxxxxxx or +84xxxxxxxxx
+    const phoneOk = (v) => /^(?:\+?84|0)\d{9}$/.test(v.replace(/[\s.()-]/g, ''));
 
-    // first thing still missing, as [field, keygen-style message]; null when the form is complete
     const problem = () => {
       const b = id.value.trim(), a = name.value.trim(), m = mail.value.trim(), ph = phone.value.trim();
       if (!b) return [id, 'Input System ID!'];
@@ -457,7 +439,6 @@
         return;
       }
       if (sent) return (status.textContent = 'Already registered ✓');
-      // the answers, keyed by Google Form question ids
       const F = S.form.fields;
       const answers = new URLSearchParams();
       const put = (k, v) => F[k] && v && answers.set(F[k], v);
@@ -467,16 +448,16 @@
       put('phone', ph);
       put('track', track.value);
       if (ctf.check(k)) put('note', 'FLAG: ' + k);
-      // same answers, pre-filled into the normal form page (fallback)
+      answers.set('fvv', '1');
+      answers.set('pageHistory', '0');
       const prefilled = () => {
         const u = new URL(S.form.action.replace(/formResponse$/, 'viewform'));
         u.searchParams.set('usp', 'pp_url');
-        answers.forEach((v, key) => u.searchParams.set(key, v));
+        answers.forEach((v, key) => key.startsWith('entry.') || key === 'emailAddress' ? u.searchParams.set(key, v) : 0);
         return u.toString();
       };
       status.textContent = 'Sending license…';
       $('#kgGo').disabled = true;
-      // Google Forms accepts a plain form POST; the reply is opaque (no-cors), only network errors surface
       fetch(S.form.action, { method: 'POST', mode: 'no-cors', body: answers })
         .then(() => {
           sent = true;
@@ -494,7 +475,6 @@
     $('#kgGo').addEventListener('click', go);
     fields.forEach((inp) => inp.addEventListener('keydown', (e) => e.key === 'Enter' && go()));
 
-    // flag piece slots: lit when found, click one to hear it again
     const parts = $('.kg-parts');
     const paint = () => {
       $$('i', parts).forEach((el) => el.classList.toggle('got', ctf.found.has(+el.dataset.n)));
@@ -511,8 +491,6 @@
     EPU.on('ctf:solved', refresh);
     paint();
 
-    // phones: the board is scaled down a lot, so while typing, lift the keygen to the
-    // top of the screen at a readable size (everything else is dimmed), then put it back
     const zoomable = () => EPU.layout.mode === 'port' && EPU.layout.s < 0.6;
     win.addEventListener('focusin', () => {
       if (!zoomable() || win.classList.contains('zoom')) return;
@@ -533,7 +511,6 @@
       [win.style.left, win.style.top, win.style.width, win.style.fontSize] = win._saved;
     });
 
-    // window chrome jokes
     win.querySelector('.wb').addEventListener('click', (e) => {
       const w = e.target.dataset.w;
       if (!w) return;
@@ -552,7 +529,6 @@
       }
     });
 
-    // trial countdown = application deadline
     const deadline = new Date(S.deadline).getTime();
     const trial = $('#kgTrial');
     const tick = () => {
@@ -570,7 +546,6 @@
     setInterval(tick, 1000);
   }
 
-  // plasma + oscilloscope in the keygen banner, drawn at a retro 15 fps
   const banner = { ctx: null, img: null, acc: 1 };
   function drawBanner(t, dt) {
     banner.acc += dt;
@@ -618,7 +593,6 @@
     c.stroke();
   }
 
-  /* ------------------------------------------------------ tracks on the tape */
   function tracks() {
     $$('.jc-tracks li').forEach((li) => {
       const i = +li.dataset.i;
@@ -634,7 +608,6 @@
     EPU.on('star:hover', (i) => $$('.jc-tracks li').forEach((li) => li.classList.toggle('lit', +li.dataset.i === i)));
   }
 
-  /* ------------------------------------------------------------ seam handle */
   function setSeam(v) {
     EPU.state.seam = clamp(v, 0, 1);
     EPU.state.seamTouched = true;
@@ -671,8 +644,8 @@
     const h = $('#seam');
     const W = innerWidth, H = innerHeight, L = EPU.layout;
     const y = L.oy + (SEAM_Y[L.mode] ?? L.AH * 0.4) * L.s;
-    const x = (EPU.state.seam + (0.5 - y / H) * SEAM_TILT) * W; // follow the tilted seam
-    const half = h.offsetWidth / 2 + 8; // keep the whole handle on screen
+    const x = (EPU.state.seam + (0.5 - y / H) * SEAM_TILT) * W;
+    const half = h.offsetWidth / 2 + 8;
     h.style.left = clamp(x, half, W - half) + 'px';
     h.style.top = y + 'px';
     h.style.setProperty('--rot', ((Math.atan((SEAM_TILT * W) / H) * 180) / Math.PI).toFixed(2) + 'deg');
@@ -680,10 +653,9 @@
   }
   EPU.seamTilt = SEAM_TILT;
 
-  /* ------------------------------------------------------------------ layout */
   function layout() {
     const W = innerWidth, H = innerHeight;
-    const mode = EPU.board || (W / H < 0.95 ? 'port' : 'land'); // EPU.board: a custom board (promo posters)
+    const mode = EPU.board || (W / H < 0.95 ? 'port' : 'land');
     const B = BOARDS[mode];
     const s = Math.min(W / B.w, H / B.h);
     const ox = (W - B.w * s) / 2, oy = (H - B.h * s) / 2;
@@ -707,7 +679,6 @@
     EPU.emit('layout', EPU.layout);
   }
 
-  /* ------------------------------------------------------------ per frame */
   let t = 0;
   ui.frame = (dt) => {
     t += dt;
@@ -716,7 +687,7 @@
 
   ui.enter = () => {
     const order = ['.p-title', '.p-date', '.p-recruit', '.p-pirate', '.p-bubble', '.p-splat1', '.p-jcard', '.p-splat2', '.p-keygen', '.p-under', '.p-vhs', '.p-advisory'];
-    const beat = 60000 / (S.music.bpm || 128) / 2; // slap a sticker on every half beat
+    const beat = 60000 / (S.music.bpm || 128) / 2;
     order.forEach((sel, i) => setTimeout(() => $(sel) && $(sel).classList.add('in'), 250 + i * beat));
     setTimeout(ui.sayIntro, 250 + order.indexOf('.p-bubble') * beat + 200);
     setTimeout(() => !ui.talked && ui.say(S.pirate.nudge), 25000);

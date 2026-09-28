@@ -1,17 +1,9 @@
-/* The flag hunt: 10 pieces hidden around the page. Players paste the whole flag into the
-   keygen's License Key. Three kinds of pieces:
-   - text pieces (scrambled in config.js), revealed by playing with the page
-   - DevTools pieces (a DOM comment, the console, Local Storage)
-   - picture pieces: stored only as pixels, never as text, so view-source / Ctrl+F can't find
-     them. The 3D scene draws them (voxel letters, writing on the smiley's head, 1998-only ink).
-   The whole flag is checked against a SHA-256 hash, so the flag itself is not in the source. */
 (function () {
   const EPU = window.EPU;
   const C = window.SITE.ctf || { key: 'x', parts: [], where: {} };
   const STORE = 'epu.ctf.found';
   const xor = (s, key) => [...s].map((c, i) => String.fromCharCode(c.charCodeAt(0) ^ key.charCodeAt(i % key.length))).join('');
 
-  // compact SHA-256 (hex) so the check also works where crypto.subtle is unavailable
   function sha256(str) {
     const K = new Uint32Array([
       0x428a2f98, 0x71374491, 0xb5c0fbcf, 0xe9b5dba5, 0x3956c25b, 0x59f111f1, 0x923f82a4, 0xab1c5ed5, 0xd807aa98, 0x12835b01, 0x243185be, 0x550c7dc3,
@@ -52,7 +44,7 @@
 
   const ctf = (EPU.ctf = {
     parts: C.parts.map((p) => {
-      if (p == null) return null; // picture piece
+      if (p == null) return null;
       try {
         return xor(atob(p), C.key);
       } catch (e) {
@@ -68,7 +60,6 @@
   ctf.total = ctf.parts.length;
   ctf.check = (s) => !!C.hash && sha256(s.trim()) === C.hash;
 
-  // picture pieces: base64 bitmaps → 0/1 arrays
   for (const n in C.pictures || {}) {
     const p = C.pictures[n];
     const raw = atob(p.bits);
@@ -79,10 +70,6 @@
   ctf.picture = (place) => ctf.pictures[ctf.where[place]];
   ctf.isPicture = (n) => ctf.parts[n - 1] == null;
 
-  /* For whoever updates config.js. In the browser console:
-       EPU.ctf.encode(["ECSC{", "piece2", …], { 2: 5, 6: 4, 7: 4 })
-     The second argument lists the picture pieces as { pieceNumber: charactersPerRow }.
-     It prints the new `ctf` values to paste into config.js. Pieces must be plain ASCII. */
   ctf.encode = (pieces, pictures = {}) => {
     const out = { key: C.key, parts: [], pictures: {}, hash: sha256(pieces.join('')), where: ctf.where };
     pieces.forEach((p, i) => {
@@ -112,19 +99,17 @@
     return { w, h, bits: btoa(String.fromCharCode(...bytes)) };
   }
 
-  // progress survives a reload (per visitor, this browser only)
   try {
     JSON.parse(localStorage.getItem(STORE) || '[]').forEach((n) => ctf.found.add(n));
     ctf.solved = localStorage.getItem(STORE + '.solved') === '1';
-  } catch (e) { /* storage blocked: progress just isn't remembered */ }
+  } catch (e) { }
   const save = () => {
     try {
       localStorage.setItem(STORE, JSON.stringify([...ctf.found]));
       if (ctf.solved) localStorage.setItem(STORE + '.solved', '1');
-    } catch (e) { /* ignore */ }
+    } catch (e) { }
   };
 
-  // reveal the piece hidden at `place` (a key of ctf.where)
   ctf.reveal = (place) => {
     const n = ctf.where[place];
     if (!n || n > ctf.total || ctf.found.has(n)) return;
@@ -142,8 +127,6 @@
     EPU.emit('ctf:solved');
   };
 
-  // DevTools-only pieces. Nothing on screen can notice them being found,
-  // so their keygen slot stays dark until the whole flag is entered.
   ctf.plant = () => {
     const put = (place, fn) => {
       const n = ctf.where[place];
@@ -157,11 +140,10 @@
     put('storage', (n, p) => {
       try {
         localStorage.setItem(`flag_${n}_of_${ctf.total}`, p);
-      } catch (e) { /* ignore */ }
+      } catch (e) { }
     });
   };
 
-  // things happening on the page (the picture pieces are revealed by the 3D scene itself)
   EPU.on('stars:all', () => ctf.reveal('stars'));
   EPU.on('risen', (on) => on && ctf.reveal('risen'));
   EPU.on('sticker:peeled', () => ctf.reveal('sticker'));

@@ -19,11 +19,11 @@ Cần Internet cho three.js (tải từ CDN jsDelivr). Font đã được đóng
 | Muốn đổi | Sửa trong `config.js` |
 |---|---|
 | Tên CLB, tiêu đề, chữ đỏ "TUYỂN MEM", hạn chót | `club`, `title`, `recruit`, `dateLine`, `deadline` |
-| Link form đăng ký (+ tự điền tên/MSSV/email/SĐT/flag) | `applyUrl`, `applyPrefill` |
+| Google Form nhận đăng ký (keygen gửi thẳng vào form) | `form` |
 | Các track (sao hồng + băng cassette) | `tracks` |
 | Lịch (mặt B của băng) | `dates` |
 | Lời thoại + gợi ý của ông hải tặc | `pirate` |
-| Flag và chỗ giấu từng mảnh | `ctf` |
+| Flag hunt | `ctf` (xem ghi chú của ban tổ chức) |
 | Link Facebook / Discord / Email | `links` |
 | Logo, ảnh CLB trong banner keygen | `logo`, `photo` (bỏ ảnh vào `assets/img/`) |
 | Nhạc | `music.src` (bỏ file vào `assets/audio/`) |
@@ -34,21 +34,7 @@ Vị trí các vật thể 3D nằm ở `COMPO` đầu file `js/scene.js`, cùng
 
 ## Flag hunt
 
-- 10 mảnh, flag bắt đầu bằng `ECSC{`. Người chơi ghép theo thứ tự 1 → 10 rồi dán vào ô **License Key** của keygen.
-- Có 3 loại mảnh:
-  - **mảnh chữ**: tìm bằng cách tương tác với trang. Trong `config.js` chúng được mã hoá (XOR + base64).
-  - **mảnh DevTools**: comment HTML, Console, Local Storage.
-  - **mảnh hình**: chỉ tồn tại dưới dạng điểm ảnh, không có ở dạng chữ trong code, nên
-    view-source hay Ctrl+F đều không thấy. Có 3 cái: tim voxel nổ ra thành chữ, chữ viết sau gáy
-    ông mặt trời, và chữ chỉ hiện trong thế giới 1998.
-- Keygen kiểm tra flag bằng SHA-256, nên trong code không có flag.
-- `ctf.where` trong `config.js` quy định mảnh nào nằm ở đâu.
-- Ông hải tặc là "người dẫn chuyện" duy nhất. Click vào ông để nhận gợi ý cho mảnh còn thiếu.
-- Tiến độ được nhớ trong trình duyệt của từng người (localStorage).
-- Đổi flag: mở trang → F12 → Console →
-  `EPU.ctf.encode(["ECSC{", "…", …], { 2: 5, 6: 4, 7: 4 })`, rồi dán kết quả vào `ctf` trong `config.js`.
-  Tham số thứ hai đánh dấu mảnh hình (số mảnh: số ký tự mỗi dòng). Mảnh chỉ dùng ký tự ASCII, mảnh của tim tối đa 4 ký tự.
-- Muốn biết ai giải được: đặt `applyPrefill.flag` là id một câu hỏi trong Google Form. Keygen chỉ gửi flag khi flag đúng.
+Có 10 mảnh flag giấu trong trang. Ghép đủ rồi dán vào ô **License Key** của keygen. Chúc may mắn ☠
 
 ## Cấu trúc
 
@@ -71,9 +57,22 @@ website/
 
 Trang tự giảm chất lượng nếu máy chậm (dưới ~40 fps): trước là độ phân giải, sau đó tắt bloom.
 
-## Đưa lên mạng
+## Đăng ký qua Google Form
 
-Đây là web tĩnh: kéo thả thư mục `website/` lên Netlify Drop, GitHub Pages, Cloudflare Pages…
+Bấm ACTIVATE là keygen gửi thẳng tên, MSSV, email, SĐT và mảng quan tâm vào Google Form trong `form`
+(không cần server, chạy được trên GitHub Pages). Nếu gửi lỗi, form sẽ tự mở ra với câu trả lời đã điền sẵn.
+
+- Nếu đổi câu hỏi trong form, cập nhật lại `form.fields` (mã `entry.…` của từng câu) và `form.tracks`.
+  `form.tracks` phải trùng y hệt các lựa chọn của câu "Mảng bạn quan tâm".
+- Không bật "Chỉ cho phép 1 câu trả lời" hay "Yêu cầu đăng nhập" trong Google Form, vì khi đó form bắt
+  đăng nhập Google và keygen không gửi thẳng được nữa.
+
+## Đưa lên mạng (GitHub Pages)
+
+1. Tạo repo mới trên GitHub (ví dụ `ecsc-recruit`) và đưa **nội dung thư mục `website/`** lên nhánh `main`.
+   Đừng đưa `ADMIN-NOTES.md` (đáp án flag) hay thư mục `media/`: repo GitHub Pages miễn phí là repo công khai.
+2. Repo → Settings → Pages → Build and deployment: chọn "Deploy from a branch", nhánh `main`, thư mục `/ (root)`.
+3. Vài phút sau trang chạy ở `https://<tên-github>.github.io/ecsc-recruit/`.
 
 ## Credits
 
