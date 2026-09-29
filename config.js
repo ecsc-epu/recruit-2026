@@ -63,6 +63,8 @@ window.SITE = {
     solved: "Trời đất quỷ thần ơi, ngươi giải được thật rồi! Điền nốt thông tin rồi bấm ACTIVATE, ta sẽ gửi flag đi kèm.",
     closeJoke: "Định bỏ trốn khỏi tàu à? Không dễ thế đâu, thủy thủ!",
     registered: "Arrr! Ta đã ghi tên ngươi vào sổ thủy thủ rồi. Nhớ để ý email nhé!",
+    solvedNeedInfo: "Giỏi lắm, thủy thủ! Nhưng flag chưa được ghi nhận đâu: điền tên, MSSV, email, SĐT, chọn mảng rồi bấm ACTIVATE thì ta mới biết ai là người giải!",
+    solvedReminder: "Ê, ngươi giải xong flag rồi mà chưa đăng ký kìa! Điền keygen rồi bấm ACTIVATE đi, không là mất điểm cộng đấy.",
     track: "★ {name}: {blurb}",
     hints: {
       pirate:  "Mảnh đầu tiên ta cất ngay trong túi áo. Gõ vào ta là có.",
@@ -134,7 +136,7 @@ window.SITE = {
     trackPlaceholder: "— chọn mảng —",
     keyPlaceholder: "ECSC{…}",
     button: "ACTIVATE",
-    credit: "cracked by ECSC"
+    credit: "something might be here"
   },
 
   links: [

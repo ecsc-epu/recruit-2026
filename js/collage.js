@@ -138,6 +138,10 @@
     </svg>`;
   }
 
+  const registered = () => {
+    try { return localStorage.getItem('epu.registered') === '1'; } catch (e) { return false; }
+  };
+
   function pirate() {
     const P = S.pirate;
     const ctf = EPU.ctf;
@@ -173,7 +177,7 @@
       hop();
       say(line);
     };
-    ui.sayIntro = () => say(P.intro);
+    ui.sayIntro = () => say(ctf.solved && !registered() ? P.solvedReminder : P.intro);
 
     p.addEventListener('tap', () => {
       ui.talked = true;
@@ -398,7 +402,7 @@
     const win = $('.p-keygen');
     const name = $('#kgName'), id = $('#kgId'), mail = $('#kgMail'), phone = $('#kgPhone'), track = $('#kgTrack'), key = $('#kgKey'), status = $('#kgStatus');
     const fields = [name, id, mail, phone, track, key];
-    let sent = false;
+    let sent = false, wasGood = false;
     const EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
     const phoneOk = (v) => /^(?:\+?84|0)\d{9}$/.test(v.replace(/[\s.()-]/g, ''));
 
@@ -427,14 +431,50 @@
     fields.forEach((inp) =>
       inp.addEventListener(inp === track ? 'change' : 'input', () => {
         EPU.audio.sfx('key');
-        if (inp === key && ctf.check(key.value) && !ctf.solved) {
-          ctf.solve();
-          EPU.audio.sfx('ok');
-          EPU.emit('celebrate');
+        if (inp === key) {
+          const good = ctf.check(key.value);
+          if (good && !wasGood) {
+            ctf.solve();
+            winFx();
+          }
+          wasGood = good;
         }
         refresh();
+        fields.forEach((f) => f.classList.contains('need') && f.value.trim() && f.classList.remove('need'));
       })
     );
+
+    // a correct flag: a big "ACCESS GRANTED", confetti and fireworks, then point at whatever is still empty
+    function winFx() {
+      EPU.audio.sfx('ok');
+      setTimeout(() => EPU.audio.sfx('wish'), 380);
+      EPU.emit('celebrate');
+      let fx = $('#winfx');
+      if (!fx) {
+        fx = document.createElement('div');
+        fx.id = 'winfx';
+        fx.setAttribute('aria-live', 'assertive');
+        document.body.appendChild(fx);
+      }
+      const colors = ['#ff3fa8', '#ffe14f', '#3dff6a', '#22d3ff', '#b98cff', '#ff5a3a', '#fff'];
+      fx.innerHTML = '<div class="winfx-card"><b>ACCESS GRANTED</b><span>FLAG CHÍNH XÁC ✓</span></div>' +
+        Array.from({ length: 90 }, () => {
+          const c = colors[(Math.random() * colors.length) | 0];
+          return `<i style="left:${(Math.random() * 100).toFixed(1)}%;background:${c};animation-delay:${(Math.random() * 0.9).toFixed(2)}s;animation-duration:${(2.2 + Math.random() * 1.8).toFixed(2)}s;--sx:${((Math.random() - 0.5) * 240).toFixed(0)}px;--rot:${((Math.random() - 0.5) * 1440).toFixed(0)}deg"></i>`;
+        }).join('');
+      fx.classList.remove('show');
+      void fx.offsetWidth;
+      fx.classList.add('show');
+      clearTimeout(winFx.t);
+      winFx.t = setTimeout(() => fx.classList.remove('show'), 4200);
+      const missing = [name, id, mail, phone, track].filter((f) => !f.value.trim());
+      if (missing.length && !sent) {
+        missing.forEach((f) => f.classList.add('need'));
+        $('#kgGo').classList.add('urge');
+        setTimeout(() => ui.say(S.pirate.solvedNeedInfo), 600);
+        setTimeout(() => missing[0].focus(), 1400);
+      } else setTimeout(() => ui.say(S.pirate.solved), 600);
+    }
 
     const go = () => {
       const a = name.value.trim(), b = id.value.trim(), m = mail.value.trim(), ph = phone.value.trim(), k = key.value.trim();
@@ -471,6 +511,9 @@
       fetch(S.form.action, { method: 'POST', mode: 'no-cors', body: answers })
         .then(() => {
           sent = true;
+          try { localStorage.setItem('epu.registered', '1'); } catch (e) { }
+          $$('.need', win).forEach((f) => f.classList.remove('need'));
+          $('#kgGo').classList.remove('urge');
           status.textContent = 'LICENSE ACCEPTED ✓ đã đăng ký';
           EPU.audio.sfx('ok');
           EPU.emit('celebrate');

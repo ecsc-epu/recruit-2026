@@ -1099,6 +1099,6 @@
       composer.render(dt);
     }
 
-    Object.assign(EPU.scene, { frame, project, ready: true, debug: { THREE, renderer, scene, camera, composer, bloom, era, art, artSize } });
+    Object.assign(EPU.scene, { frame, project, ready: true, debug: { THREE, renderer, scene, camera, composer, bloom, era, art, artSize, burst, SPARK } });
   }
 })();

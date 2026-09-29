@@ -102,6 +102,7 @@
   try {
     JSON.parse(localStorage.getItem(STORE) || '[]').forEach((n) => ctf.found.add(n));
     ctf.solved = localStorage.getItem(STORE + '.solved') === '1';
+    if (ctf.solved) for (let n = 1; n <= ctf.total; n++) ctf.found.add(n);
   } catch (e) { }
   const save = () => {
     try {
