@@ -86,6 +86,7 @@
       document.body.appendChild(top);
     }
     top.appendChild($('.p-bubble'));
+    top.appendChild($('.p-keygen'));
 
     splat($('.p-splat1 svg'), 11, 220, 160, S.stickers.splat1, 'splat-a');
     splat($('.p-splat2 svg'), 5, 170, 130, S.stickers.splat2, 'splat-b');
@@ -234,6 +235,7 @@
   function fitLines(g, lines, bx, by, bw, bh, gapRatio = 0.08) {
     const ms = lines.map((ln) => ({ ...ln, m: measure(ln.text, ln.font) }));
     let ks = ms.map((ln) => bw / (ln.m.l + ln.m.r));
+    ks = ks.map((k, i) => (ms[i].rel ? Math.min(k, ks[0] * ms[i].rel) : k));
     const gap = bh * gapRatio;
     const total = ms.reduce((a, ln, i) => a + (ln.m.a + ln.m.d) * ks[i], 0) + gap * (ms.length - 1);
     const shrink = Math.min(1, bh / total);
@@ -296,7 +298,7 @@
       ['.p-title', (g, w, h) => fitLines(g, (S.title[L.mode] || S.title[L.mode === 'port' ? 'portrait' : 'landscape']).map((t) => ({ text: t, font: 'Anton' })), 0, 0, w, h, 0.05)],
       ['.p-date', (g, w, h) => fitLines(g, [{ text: S.dateLine, font: 'Anton' }], 0, 0, w, h)],
       ['.p-recruit', (g, w, h) => {
-        const lines = fitLines(g, [{ text: S.recruit.big, font: 'Anton', cls: 'big' }, { text: S.recruit.small, font: 'Anton', cls: 'small' }], 0, 0, w, h * 0.78, 0.07);
+        const lines = fitLines(g, [{ text: S.recruit.big, font: 'Anton', cls: 'big' }, { text: S.recruit.small, font: 'Anton', cls: 'small', rel: 1.2 }], 0, 0, w, h * 0.78, 0.07);
         const back = svg('g', { class: 'drips' }), front = svg('g', { class: 'drips' });
         g.insertBefore(back, g.querySelectorAll('text')[1]);
         g.appendChild(front);

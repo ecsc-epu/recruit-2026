@@ -50,7 +50,7 @@ body.no3d #gl, body.no3d #seam { display: none; }
 #ghost div:nth-child(even) { margin-left: -24vw; }
 
 #stage { position: fixed; left: 0; top: 0; z-index: 2; transform-origin: 0 0; pointer-events: none; user-select: none; -webkit-user-select: none; }
-#stage-top { position: fixed; left: 0; top: 0; z-index: 6; transform-origin: 0 0; pointer-events: none; }
+#stage-top { position: fixed; left: 0; top: 0; z-index: 7; transform-origin: 0 0; pointer-events: none; }
 #blood { position: fixed; left: 0; top: 0; width: 100vw; z-index: 5; pointer-events: none; overflow: visible; filter: drop-shadow(0 3px 2px rgba(0,0,0,.45)); }
 #sc { position: fixed; left: -500px; top: 0; width: 300px; height: 120px; opacity: 0; pointer-events: none; }
 
@@ -153,6 +153,7 @@ svg.splat { width: 100%; height: 100%; overflow: visible; filter: url(#fSticker)
 .jc-foot { display: flex; justify-content: space-between; padding: 6px 10px 7px; font-size: 11px; border-top: 2px solid #111; }
 .risen .p-jcard { background: #efe0d8; }
 
+#stage-top .p-keygen { z-index: 10; }
 .p-keygen { left: 1068px; top: 420px; width: 452px; font-size: 13px; --r: 1.5deg; }
 .win {
   background: var(--win); color: var(--win-ink); padding: 3px;
@@ -258,7 +259,7 @@ body.kg-typing #blood, body.kg-typing #drops, body.kg-typing #seam { visibility:
 .risen .p-vhs { background: #8a0000; }
 .risen .p-vhs span { color: #8a0000; }
 .p-advisory {
-  left: 1452px; top: 806px; width: 124px; height: 78px; --r: -2deg;
+  left: 256px; top: 814px; width: 124px; height: 78px; --r: -4deg;
   display: flex; flex-direction: column; justify-content: center; text-align: center;
   background: #000; color: #fff; border: 3px solid #fff; outline: 2px solid #000; box-shadow: 5px 5px 0 rgba(0,0,0,.5);
   font-family: "Arial Black", Arial, Helvetica, sans-serif; line-height: 1;
@@ -266,7 +267,7 @@ body.kg-typing #blood, body.kg-typing #drops, body.kg-typing #seam { visibility:
 .p-advisory b { font-size: 11px; letter-spacing: .04em; }
 .p-advisory strong { background: #fff; color: #000; font-size: 19px; margin: 3px 4px; padding: 3px 0; }
 .p-under {
-  left: 1458px; top: 814px; width: 112px; height: 62px; z-index: 5; --r: 4deg; pointer-events: none;
+  left: 262px; top: 822px; width: 112px; height: 62px; z-index: 5; --r: 3deg; pointer-events: none;
   display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px;
   background: #fff7a8; color: #000; box-shadow: 3px 3px 0 rgba(0,0,0,.35);
   font: 20px/1 "Patrick Hand", cursive;
@@ -281,11 +282,11 @@ body.kg-typing #blood, body.kg-typing #drops, body.kg-typing #seam { visibility:
 #stage.port .p-splat1 { left: 244px; top: 586px; width: 200px; height: 146px; }
 #stage.port .p-jcard { display: none; }
 #stage.port .p-recruit { left: 60px; top: 916px; width: 780px; height: 206px; }
-#stage.port .p-keygen { left: 70px; top: 1104px; width: 760px; font-size: 13.2px; --r: .8deg; }
+.port .p-keygen { left: 70px; top: 1104px; width: 760px; font-size: 13.2px; --r: .8deg; }
 #stage.port .p-splat2 { left: 712px; top: 1076px; width: 150px; height: 116px; --r: 12deg; }
 #stage.port .p-vhs { left: 34px; top: 348px; }
-#stage.port .p-advisory { left: 748px; top: 1500px; }
-#stage.port .p-under { left: 754px; top: 1508px; }
+#stage.port .p-advisory { left: 762px; top: 824px; }
+#stage.port .p-under { left: 768px; top: 832px; }
 
 #seam {
   position: fixed; z-index: 6; translate: -50% -50%; rotate: var(--rot, 0deg);
@@ -304,6 +305,7 @@ body:not(.entered) #seam { opacity: 0; pointer-events: none; }
 #intro { position: absolute; inset: 0; width: 100%; height: 100%; }
 .splash-center { position: relative; text-align: center; padding: 16px; max-width: 100%; box-sizing: border-box; }
 .ascii {
+  width: fit-content; text-align: left;
   margin: 0 auto 14px; font: clamp(9px, 2.4vw, 24px)/1.02 ui-monospace, Menlo, Consolas, "DejaVu Sans Mono", "Courier New", monospace;
   background: linear-gradient(90deg, #ff2a2a, #ff8a00, #ffe600, #2dff6a, #22d3ff, #7a5cff, #ff4fd8, #ff2a2a) 0 0 / 200% 100%;
   -webkit-background-clip: text; background-clip: text; color: transparent; animation: rainbow 3s linear infinite;

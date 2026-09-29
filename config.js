@@ -8,7 +8,7 @@ window.SITE = {
     portrait: ["EPU CYBER", "SECURITY CLUB"]
   },
 
-  recruit: { big: "TUYỂN MEM", small: "ĐỢT 2 · 2026" },
+  recruit: { big: "TUYỂN THÀNH VIÊN", small: "ĐỢT 2" },
 
   dateLine: "HẠN CHÓT 20.11 · 23:59",
 
@@ -146,10 +146,10 @@ window.SITE = {
   logo: "",
   photo: "",
 
-  ghost: "EPU CYBERSECURITY CLUB ✦ TUYỂN MEM ĐỢT 2 ✦ ",
+  ghost: "EPU CYBERSECURITY CLUB ✦ TUYỂN THÀNH VIÊN ĐỢT 2 ✦ ",
 
   intro: {
-    line: "CYBERSECURITY CLUB ✦ RECRUIT 2026",
+    line: "EPU Cybersecurity Club - Recruit 2026",
     scroller: "EPU CYBERSECURITY CLUB PROUDLY PRESENTS ... TUYEN MEM DOT 2 - 2026 ... WEB * PWN * CRYPTO * FORENSICS * REVERSING ... 10 FLAG PIECES ARE HIDDEN IN HERE ... MUSIC: UNREAL SUPERHERO 3 BY KENET & REZ ... GREETZ TO ALL CTF PLAYERS, DEMOSCENERS AND CURIOUS MINDS ... TURN YOUR SPEAKERS UP ...     "
   }
 };
