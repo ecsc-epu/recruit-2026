@@ -172,6 +172,15 @@
     s.stop(c.currentTime + dur);
   }
 
+  // xylophone note number i on a major pentatonic scale (the chrome title is playable)
+  A.note = (i) => {
+    if (!A.ctx || A.ctx.state !== 'running') return;
+    const steps = [0, 2, 4, 7, 9];
+    const semi = steps[i % 5] + 12 * Math.floor(i / 5);
+    tone(392 * 2 ** (semi / 12), 0.22, 'triangle', 0.5);
+    tone(392 * 2 ** ((semi + 12) / 12), 0.08, 'square', 0.12);
+  };
+
   A.sfx = (name) => {
     if (!A.ctx || A.ctx.state !== 'running') return;
     const semis = (base, list, gap, len, type = 'square') =>

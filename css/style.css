@@ -111,7 +111,9 @@ svg text { font-weight: 400; }
 @keyframes hop { 40% { translate: 0 -28px; rotate: -6deg; } }
 .risen .pir-skull { filter: hue-rotate(-60deg) saturate(3); }
 
-.p-bubble { left: 322px; top: 174px; width: 388px; pointer-events: none; }
+.p-bubble { left: 322px; top: 174px; width: 388px; cursor: grab; touch-action: none; }
+.p-bubble.dragging { cursor: grabbing; }
+.p-bubble:not(.on) { pointer-events: none; }
 .p-bubble p {
   position: relative; margin: 0; min-height: 1.2em;
   background: #fff; color: #000; border: 4px solid #000; border-radius: 26px 26px 26px 8px;
@@ -352,3 +354,46 @@ body:not(.entered) #seam { opacity: 0; pointer-events: none; }
 @keyframes need { 50% { box-shadow: inset 2px 2px 0 var(--win-lo), 0 0 0 3px #ff3fa8, 0 0 16px #ff3fa8; } }
 .kg-go.urge { animation: urge .8s ease-in-out infinite; }
 @keyframes urge { 50% { scale: 1.08; box-shadow: inset -2px -2px 0 rgba(0,0,0,.45), 0 0 0 2px #000, 0 0 26px #ff3fa8; } }
+.kg-go:disabled { background: #9a8fb0; color: #e6e0f0; cursor: not-allowed; filter: grayscale(.6); }
+.kg-go:disabled::after { display: none; }
+.kg-go:disabled { pointer-events: none; }
+.kg-meta { cursor: help; }
+.risen .p-pirate svg { animation: tremble .12s linear infinite; }
+@keyframes tremble { 0% { translate: 0 0; } 25% { translate: -2px 1px; } 50% { translate: 1px -1px; } 75% { translate: 2px 1px; } 100% { translate: 0 0; } }
+.p-title .tl { transform-box: fill-box; transform-origin: 50% 100%; transition: transform .35s cubic-bezier(.3, 1.8, .5, 1); cursor: pointer; }
+.p-title .tl.up { transform: translateY(-12%) scale(1.06, 1.14); transition-duration: .12s; }
+.p-title .tl.spin { transform-origin: 50% 50%; animation: tlspin .6s cubic-bezier(.3, 1.4, .5, 1); }
+@keyframes tlspin { from { transform: rotate(0); } to { transform: rotate(360deg); } }
+.p-recruit { cursor: pointer; }
+.p-recruit.ooze .drips { transform: scaleY(1.5); }
+.risen .p-recruit.ooze .drips { transform: scaleY(2.3); }
+.p-recruit.ooze svg.poster text { animation: shudder .1s linear infinite; }
+@keyframes shudder { 0% { transform: translate(0, 0); } 25% { transform: translate(-1.5px, .5px); } 50% { transform: translate(1px, -1px); } 75% { transform: translate(1.5px, 1px); } }
+.p-recruit.in.squish { animation: squish .35s cubic-bezier(.3, 1.6, .5, 1); }
+@keyframes squish { 30% { scale: 1.06 .9; } 60% { scale: .97 1.04; } }
+/* the "hidden" mute button: a Win98 tray speaker jammed into the screen corner under a strip of tape */
+#mute {
+  position: fixed; right: 14px; bottom: 12px; z-index: 8; --m: clamp(.75, var(--s, 1), 1.2);
+  rotate: -10deg; transition: translate .25s cubic-bezier(.3, 1.6, .5, 1), rotate .25s;
+}
+#mute:hover, #mute:focus-within { translate: -4px -6px; rotate: -2deg; }
+#mute button {
+  display: grid; place-items: center; width: calc(64px * var(--m)); height: calc(64px * var(--m)); padding: 0; cursor: pointer;
+  background: var(--win); border: 0;
+  box-shadow: inset -3px -3px 0 var(--win-lo), inset 3px 3px 0 var(--win-hi), 0 0 0 2px #000, 5px 5px 0 rgba(0,0,0,.45);
+}
+#mute button:active { box-shadow: inset 3px 3px 0 var(--win-lo), inset -3px -3px 0 var(--win-hi), 0 0 0 2px #000; }
+#mute button:focus-visible { outline: 2px dashed var(--accent); outline-offset: 3px; }
+#mute svg { width: 70%; height: 70%; }
+#mute .cross, #mute.off .waves { display: none; }
+#mute.off .cross { display: inline; }
+#mute .tape {
+  position: absolute; left: calc(-46px * var(--m)); top: calc(-10px * var(--m)); rotate: -28deg; pointer-events: none; white-space: nowrap;
+  padding: 4px 10px 3px; background: rgba(255, 247, 168, .92); color: #000; box-shadow: 2px 2px 0 rgba(0,0,0,.3);
+  font: calc(16px * var(--m))/1 "Patrick Hand", "Comic Sans MS", cursive; text-align: center; padding: 3px 8px 2px;
+}
+body:not(.entered) #mute { display: none; }
+@media (max-aspect-ratio: 19/20) { #mute { bottom: auto; top: 30px; right: 10px; rotate: 10deg; } #mute:hover, #mute:focus-within { translate: -4px 4px; } }
+#mute.hidden { display: none; }
+#mute.pop { animation: mutepop .6s cubic-bezier(.3, 1.8, .5, 1) both; }
+@keyframes mutepop { from { scale: 0; rotate: 200deg; } to { scale: 1; } }

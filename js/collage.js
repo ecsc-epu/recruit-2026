@@ -70,7 +70,7 @@
         </div>
       </section>
 
-      ${underN ? `<div class="piece p-under" aria-hidden="true"><b>${underN}/${ctf.total}</b><span>${esc(ctf.parts[underN - 1])}</span></div>` : ''}
+      ${underN ? `<div class="piece p-under" aria-hidden="true"><b>${underN}/${ctf.total}</b><span></span></div>` : ''}
       <div class="piece p-splat1 drag"><svg class="splat" viewBox="0 0 220 160" aria-label="${esc(S.stickers.splat1.join(' '))}"></svg></div>
       <div class="piece p-splat2 drag"><svg class="splat" viewBox="0 0 170 130" aria-label="${esc(S.stickers.splat2.join(' '))}"></svg></div>
       <div class="piece p-vhs drag">${
@@ -92,10 +92,16 @@
     splat($('.p-splat2 svg'), 5, 170, 130, S.stickers.splat2, 'splat-b');
     $('#ghost').innerHTML = Array.from({ length: 6 }, () => `<div>${esc(S.ghost).repeat(3)}</div>`).join('');
 
-    $$('.piece.drag').forEach((p) => draggable(p, p));
+    $$('.piece.drag').forEach((p) => draggable(p, p, p.classList.contains('p-pirate') ? $('.p-bubble') : null));
+    const bubble = $('.p-bubble');
+    draggable(bubble, bubble);
+    bubble.addEventListener('tap', () => $('.p-pirate').dispatchEvent(new CustomEvent('tap')));
     draggable($('.p-keygen'), $('.p-keygen .win-title'));
 
     pirate();
+    titleToy();
+    muteToy();
+    bloodToy();
     keygen();
     tracks();
     seamHandle();
@@ -150,7 +156,28 @@
     const bubble = $('.p-bubble');
     const order = Object.keys(ctf.where).sort((a, b) => ctf.where[a] - ctf.where[b]);
     const about = [...P.about, P.schedule.replace('{dates}', S.dates.map((d) => `${d.d} ${d.t}`).join(' · '))];
-    let typing = 0, hintI = 0, aboutI = 0, streak = 0;
+    let typing = 0, hintI = 0, aboutI = 0, guideI = 0, turn = 0;
+    // what a tap says next: a hint for a missing piece, a line about how the page works, or about the club
+    const ROTA = ['hint', 'guide', 'hint', 'guide', 'about'];
+    const guides = () => P.guide.filter((g) => !(g.desktop && EPU.layout.mode === 'port')).map((g) => g.text || g);
+    const tipDone = (key) => {
+      try { return !!localStorage.getItem('epu.tip.' + key); } catch (e) { return false; }
+    };
+    const onceTip = (key, line) => {
+      if (tipDone(key)) return;
+      // said a bit later; waits while a more important line is pending, skipped (and retried next time)
+      // if he said something else meanwhile. Only counts as done once actually said.
+      const at = Date.now();
+      const fire = () => {
+        if (tipDone(key) || ui.lastSay > at + 50) return;
+        if (Date.now() < (ui.holdTips || 0)) return setTimeout(fire, ui.holdTips - Date.now() + 5000);
+        const readBy = (ui.lastSay || 0) + (ui.lastSayLen || 0) * 22 + 3500; // let the current line be typed out and read
+        if (Date.now() < readBy) return setTimeout(fire, readBy - Date.now());
+        try { localStorage.setItem('epu.tip.' + key, '1'); } catch (e) { }
+        ui.say(line);
+      };
+      setTimeout(fire, 4200);
+    };
     ui.talked = false;
 
     const hop = () => {
@@ -170,29 +197,76 @@
         if (++k >= chars.length) clearInterval(typing);
       }, 22);
     };
-    const fill = (t, n) => t.replace(/\{n\}/g, n).replace(/\{total\}/g, ctf.total).replace(/\{part\}/g, ctf.parts[n - 1] || '');
+    const fill = (t, n) => t.replace(/\{n\}/g, n).replace(/\{total\}/g, ctf.total).replace(/\{part\}/g, ctf.part(n));
     ui.fill = fill;
+    // a line may be a string, a list (taken in turn) or { place: line } for the picture pieces
+    const turns = {};
+    const pickFor = (v, n) => {
+      if (typeof v === 'string') return v;
+      if (Array.isArray(v)) {
+        const k = v[0];
+        turns[k] = (turns[k] || 0) + 1;
+        return v[(turns[k] - 1) % v.length];
+      }
+      const place = Object.keys(ctf.where).find((p) => ctf.where[p] === n);
+      return v[place] || v.other || '';
+    };
+    ui.pickFor = pickFor;
 
     ui.say = (line) => {
+      ui.talked = true; // he has something to say: no need for the "tap me" nudge
+      ui.lastSay = Date.now();
+      ui.lastSayLen = [...line].length;
       hop();
       say(line);
     };
-    ui.sayIntro = () => say(ctf.solved && !registered() ? P.solvedReminder : P.intro);
+    ui.sayIntro = () => {
+      say(P.intro); // always the greeting first
+      const next = ctf.solved && !registered() ? P.solvedReminder : null;
+      if (next) setTimeout(() => !ui.talked && ui.say(next), 7000);
+    };
+    // a line tied to something the player just did (not repeated within a few seconds)
+    let lastOn = 0;
+    ui.sayOn = (k, force) => {
+      if (!P.on || !P.on[k] || (!force && Date.now() - lastOn < 6000)) return;
+      lastOn = Date.now();
+      ui.say(P.on[k]);
+    };
+    let poked = false;
+    EPU.on('mascot:click', () => !poked && (poked = true) && ui.sayOn('poke3d'));
+    EPU.on('bubble:dragged', () => ui.sayOn('dragBubble'));
+    // the blood-red RISEN mode: panic on the way in, relief on the way out
+    EPU.on('risen', (on) => {
+      const line = P.on && pickFor(on ? P.on.risenOn : P.on.risenOff);
+      if (!line) return;
+      if (Date.now() - (ui.lastSay || 0) < 300) {
+        // he is reading out a flag piece that this unlocked: panic right after
+        const at = Date.now();
+        ui.holdTips = at + 4600; // the panic goes before any pending tip
+        setTimeout(() => ui.lastSay <= at + 50 && EPU.state.risen === on && ui.say(line), 4000);
+      } else ui.say(line);
+    });
 
     p.addEventListener('tap', () => {
       ui.talked = true;
       hop();
-      if (ctf.where.pirate && !ctf.found.has(ctf.where.pirate)) return ctf.reveal('pirate');
-      if (streak >= 2) {
-        streak = 0;
-        return say(about[aboutI++ % about.length]);
+      if (ctf.where.pirate && !ctf.has(ctf.where.pirate)) return ctf.reveal('pirate');
+      const kind = ROTA[turn++ % ROTA.length];
+      if (kind === 'about') return say(about[aboutI++ % about.length]);
+      if (kind === 'guide') {
+        const g = guides();
+        return say(g[guideI++ % g.length]);
       }
-      streak++;
-      const missing = order.filter((k) => !ctf.found.has(ctf.where[k]) && P.hints[k]);
+      const missing = order.filter((k) => !ctf.has(ctf.where[k]) && P.hints[k]);
       if (ctf.solved || !missing.length) return say(ctf.solved ? P.solved : P.allFound);
       say(P.hints[missing[hintI++ % missing.length]]);
     });
-    EPU.on('ctf:found', (n) => ui.say(fill(ctf.isPicture(n) ? P.foundPicture : P.found, n)));
+    EPU.on('ctf:found', (n) => {
+      const place = Object.keys(ctf.where).find((p) => ctf.where[p] === n);
+      ui.say(fill(ctf.isPicture(n) ? pickFor(P.foundPicture, n) : (P.foundAt && P.foundAt[place]) || pickFor(P.found, n), n));
+      if (P.tips) onceTip('firstPiece', fill(P.tips.firstPiece, n));
+    });
+    EPU.on('star:collect', () => P.tips && EPU.layout.mode !== 'port' && onceTip('firstStar', P.tips.firstStar));
     EPU.on('ctf:solved', () => ui.say(P.solved));
   }
 
@@ -296,10 +370,132 @@
     return d;
   }
 
+  // turn each placed line into one <text> per letter, so letters can move on their own
+  function splitLetters(g, placed) {
+    let idx = 0;
+    placed.forEach((ln) => {
+      const old = [...g.querySelectorAll('text')].find((t) => t.textContent === ln.text);
+      mctx.font = `100px ${ln.font}`;
+      const x0 = ln.x - ln.m.l * ln.k;
+      [...ln.text].forEach((ch, i) => {
+        if (ch === ' ') return;
+        const t = svg('text', { x: (x0 + mctx.measureText(ln.text.slice(0, i)).width * ln.k).toFixed(1), y: ln.base.toFixed(1), 'font-size': (100 * ln.k).toFixed(2), 'font-family': ln.font, class: 'tl' });
+        t.dataset.i = idx++;
+        t.textContent = ch;
+        g.appendChild(t);
+      });
+      if (old) old.remove();
+    });
+  }
+  // the title is a xylophone: hover a letter to bounce it and play its note, click to spin it
+  function titleToy() {
+    const title = $('.p-title');
+    let sweep = [];
+    const hit = (t) => {
+      t.classList.remove('up');
+      void t.getBBox();
+      t.classList.add('up');
+      clearTimeout(t._t);
+      t._t = setTimeout(() => t.classList.remove('up'), 260);
+      EPU.audio.note(+t.dataset.i);
+      const now = Date.now();
+      sweep = sweep.filter((s) => now - s.at < 2500 && s.i !== t.dataset.i);
+      sweep.push({ i: t.dataset.i, at: now });
+      if (sweep.length >= 14) {
+        sweep = [];
+        // the tune unlocks a flag piece; once it's been found he just comments on the music
+        if (EPU.ctf.has(EPU.ctf.where.song)) ui.sayOn && ui.sayOn('titleSong');
+        EPU.emit('title:song');
+      }
+    };
+    title.addEventListener('pointerover', (e) => e.target.classList && e.target.classList.contains('tl') && hit(e.target));
+    title.addEventListener('click', (e) => {
+      const t = e.target;
+      if (!t.classList || !t.classList.contains('tl')) return;
+      t.classList.remove('spin');
+      void t.getBBox();
+      t.classList.add('spin');
+      EPU.audio.sfx('boing');
+    });
+  }
+
+  // the bloody headline: hover makes it ooze and shudder, a click splatters blood down the screen
+  function bloodToy() {
+    const head = $('.p-recruit');
+    let hits = 0, hitT = 0, total = 0;
+    head.addEventListener('pointerenter', () => head.classList.add('ooze'));
+    head.addEventListener('pointerleave', () => head.classList.remove('ooze'));
+    head.addEventListener('click', (e) => {
+      const drops = $('#drops');
+      for (let i = 0; i < 12; i++) {
+        const d = document.createElement('i');
+        const w = 6 + Math.random() * 12;
+        d.style.cssText = `left:${e.clientX + (Math.random() - 0.5) * 120}px;top:${e.clientY + (Math.random() - 0.5) * 40}px;width:${w}px;height:${w * 1.3}px;` +
+          `animation:fall ${(1 + Math.random() * 1.2).toFixed(2)}s cubic-bezier(.55,0,1,.45) ${(Math.random() * 0.25).toFixed(2)}s forwards`;
+        drops.appendChild(d);
+        setTimeout(() => d.remove(), 2800);
+      }
+      EPU.audio.sfx('drop');
+      setTimeout(() => EPU.audio.sfx('drop'), 120);
+      head.classList.remove('squish');
+      void head.offsetWidth;
+      head.classList.add('squish');
+      if (++total === 10) EPU.emit('mute:reveal'); // squeezed hard enough: the hidden mute button pops out
+      hits = Date.now() - hitT < 1500 ? hits + 1 : 1;
+      hitT = Date.now();
+      if (hits >= 5) {
+        hits = 0;
+        ui.sayOn && ui.sayOn('squeeze');
+      }
+    });
+  }
+
+  // the "secret" mute button poking out from under the CTF RAVE sticker
+  function muteToy() {
+    let box = $('#mute');
+    if (!box) {
+      box = document.createElement('div');
+      box.id = 'mute';
+      // a Windows 98 tray speaker, pixel by pixel; the waves turn into a red cross when muted
+      box.innerHTML = `<button aria-label="Tắt nhạc"><svg viewBox="0 0 16 16" shape-rendering="crispEdges" aria-hidden="true">
+          <rect x="1" y="6" width="3" height="4" fill="#1b0f33"/><rect x="4" y="5" width="1" height="6" fill="#1b0f33"/>
+          <rect x="5" y="4" width="1" height="8" fill="#1b0f33"/><rect x="6" y="3" width="1" height="10" fill="#1b0f33"/>
+          <rect x="7" y="2" width="1" height="12" fill="#1b0f33"/><rect x="2" y="7" width="1" height="2" fill="#b98cff"/>
+          <g class="waves" fill="#ff3fa8"><rect x="9" y="6" width="1" height="4"/><rect x="11" y="4" width="1" height="8"/><rect x="10" y="4" width="1" height="1"/><rect x="10" y="11" width="1" height="1"/>
+            <rect x="13" y="3" width="1" height="10"/><rect x="12" y="2" width="1" height="1"/><rect x="12" y="13" width="1" height="1"/></g>
+          <g class="cross" fill="#e3120b"><rect x="9" y="5" width="2" height="2"/><rect x="11" y="7" width="2" height="2"/><rect x="13" y="9" width="2" height="2"/>
+            <rect x="13" y="5" width="2" height="2"/><rect x="9" y="9" width="2" height="2"/></g>
+        </svg></button><span class="tape">không có gì<br>ở đây cả</span>`;
+      document.body.appendChild(box);
+      let shown = false;
+      try { shown = localStorage.getItem('epu.mute') === '1'; } catch (e) { }
+      box.classList.toggle('hidden', !shown);
+      EPU.on('mute:reveal', () => {
+        if (!box.classList.contains('hidden')) return;
+        box.classList.remove('hidden');
+        box.classList.add('pop');
+        try { localStorage.setItem('epu.mute', '1'); } catch (e) { }
+        EPU.audio.sfx('boing');
+        ui.sayOn && ui.sayOn('muteFound', true);
+      });
+    }
+    const b = box.querySelector('button');
+    b.addEventListener('click', () => {
+      const el = EPU.audio.el;
+      if (!el) return;
+      el.muted = !el.muted;
+      b.setAttribute('aria-label', el.muted ? 'Bật nhạc' : 'Tắt nhạc');
+      box.classList.toggle('off', el.muted);
+      EPU.audio.sfx('blip');
+      ui.lastOn = 0;
+      ui.sayOn && ui.sayOn(el.muted ? 'muteOn' : 'muteOff', true);
+    });
+  }
+
   function fitPosters() {
     const L = EPU.layout;
     const pieces = [
-      ['.p-title', (g, w, h) => fitLines(g, (S.title[L.mode] || S.title[L.mode === 'port' ? 'portrait' : 'landscape']).map((t) => ({ text: t, font: 'Anton' })), 0, 0, w, h, 0.05)],
+      ['.p-title', (g, w, h) => splitLetters(g, fitLines(g, (S.title[L.mode] || S.title[L.mode === 'port' ? 'portrait' : 'landscape']).map((t) => ({ text: t, font: 'Anton' })), 0, 0, w, h, 0.05))],
       ['.p-date', (g, w, h) => fitLines(g, [{ text: S.dateLine, font: 'Anton' }], 0, 0, w, h)],
       ['.p-recruit', (g, w, h) => {
         const lines = fitLines(g, [{ text: S.recruit.big, font: 'Anton', cls: 'big' }, { text: S.recruit.small, font: 'Anton', cls: 'small', rel: 1.2 }], 0, 0, w, h * 0.78, 0.07);
@@ -353,7 +549,8 @@
       .join('');
   }
 
-  function draggable(piece, handle) {
+  // follower: another piece that moves along (the speech bubble follows the pirate)
+  function draggable(piece, handle, follower) {
     handle.addEventListener('pointerdown', (e) => {
       if (e.button !== 0) return;
       if (e.target.closest('input, button, a, [data-w]')) return;
@@ -361,8 +558,9 @@
       const s = EPU.layout.s;
       const sx = e.clientX, sy = e.clientY;
       const ox = piece.offsetLeft, oy = piece.offsetTop;
+      const fx = follower ? follower.offsetLeft : 0, fy = follower ? follower.offsetTop : 0;
       let moved = false, lastX = sx;
-      piece.style.zIndex = ++zTop;
+      if (!piece.classList.contains('p-bubble')) piece.style.zIndex = ++zTop; // the bubble stays under the keygen
       handle.setPointerCapture(e.pointerId);
       const move = (ev) => {
         const dx = (ev.clientX - sx) / s, dy = (ev.clientY - sy) / s;
@@ -374,6 +572,10 @@
         const L = EPU.layout;
         piece.style.left = clamp(ox + dx, -piece.offsetWidth * 0.6, L.AW - piece.offsetWidth * 0.4) + 'px';
         piece.style.top = clamp(oy + dy, -piece.offsetHeight * 0.3, L.AH - piece.offsetHeight * 0.3) + 'px';
+        if (follower) {
+          follower.style.left = fx + (piece.offsetLeft - ox) + 'px';
+          follower.style.top = fy + (piece.offsetTop - oy) + 'px';
+        }
         piece.style.setProperty('--tilt', clamp((ev.clientX - lastX) * 0.9, -14, 14).toFixed(1) + 'deg');
         lastX = ev.clientX;
       };
@@ -388,6 +590,7 @@
         void piece.offsetWidth;
         piece.classList.add('slap');
         EPU.audio.sfx('drop');
+        if (piece.classList.contains('p-bubble')) EPU.emit('bubble:dragged');
         const home = piece._home;
         if (piece.classList.contains('p-advisory') && home && Math.hypot(piece.offsetLeft - home[0], piece.offsetTop - home[1]) > 70) EPU.emit('sticker:peeled');
       };
@@ -415,6 +618,8 @@
       if (!ph) return [phone, 'Input Phone No.!'];
       if (!phoneOk(ph)) return [phone, 'Invalid Phone No.!'];
       if (!track.value) return [track, 'Select a Track!'];
+      if (!key.value.trim()) return [key, 'Input License Key!'];
+      if (!ctf.check(key.value)) return [key, 'Invalid License Key'];
       return null;
     };
     const refresh = () => {
@@ -424,9 +629,11 @@
       key.classList.toggle('ok', !!good);
       key.classList.toggle('bad', !!bad);
       const miss = problem();
-      if (bad) status.textContent = 'Invalid License Key';
+      if (sent) status.textContent = 'LICENSE ACCEPTED ✓ đã đăng ký';
+      else if (bad) status.textContent = 'Invalid License Key';
       else if (miss) status.textContent = (good ? 'KEY OK ✓ ' : '') + miss[1];
-      else status.textContent = good ? 'ELITE KEY ✓ press ACTIVATE' : 'Ready ✓ press ACTIVATE';
+      else status.textContent = 'ELITE KEY ✓ press ACTIVATE';
+      $('#kgGo').disabled = !good && !sent; // ACTIVATE unlocks only with the right flag
     };
     fields.forEach((inp) =>
       inp.addEventListener(inp === track ? 'change' : 'input', () => {
@@ -497,7 +704,7 @@
       put('email', m);
       put('phone', ph);
       put('track', track.value);
-      if (ctf.check(k)) put('note', 'FLAG: ' + k);
+      put('note', 'FLAG: ' + k);
       answers.set('fvv', '1');
       answers.set('pageHistory', '0');
       const prefilled = () => {
@@ -523,25 +730,44 @@
           status.textContent = 'Network error: opening form…';
           window.open(prefilled(), '_blank', 'noopener');
         })
-        .finally(() => ($('#kgGo').disabled = false));
+        .finally(refresh);
     };
     $('#kgGo').addEventListener('click', go);
+    // a disabled button swallows clicks, so listen on its row: clicking a locked ACTIVATE earns a remark
+    $('.kg-foot').addEventListener('click', (e) => {
+      const b = $('#kgGo'), r = b.getBoundingClientRect();
+      if (!b.disabled || e.clientX < r.left || e.clientX > r.right || e.clientY < r.top || e.clientY > r.bottom) return;
+      EPU.audio.sfx('error');
+      win.classList.remove('shake');
+      void win.offsetWidth;
+      win.classList.add('shake');
+      ui.sayOn('locked');
+    });
+    const meta = $('.kg-meta');
+    meta.addEventListener('pointerenter', () => ui.sayOn('countdown'));
+    meta.addEventListener('click', () => ui.sayOn('countdown'));
     fields.forEach((inp) => inp.addEventListener('keydown', (e) => e.key === 'Enter' && go()));
 
     const parts = $('.kg-parts');
     const paint = () => {
-      $$('i', parts).forEach((el) => el.classList.toggle('got', ctf.found.has(+el.dataset.n)));
-      $('#kgPartsN').textContent = `${ctf.found.size}/${ctf.total}`;
+      $$('i', parts).forEach((el) => el.classList.toggle('got', ctf.has(+el.dataset.n)));
+      $('#kgPartsN').textContent = `${ctf.count()}/${ctf.total}`;
     };
     parts.addEventListener('click', (e) => {
       const n = +(e.target.dataset && e.target.dataset.n);
-      if (!n || !ctf.found.has(n)) return;
-      if (!ctf.isPicture(n)) return ui.say(`${n}/${ctf.total}: ${ctf.parts[n - 1]}`);
-      ui.say(ui.fill(S.pirate.pictureAgain, n));
+      if (!n || !ctf.has(n)) return;
+      if (!ctf.isPicture(n)) return ui.say(ui.fill(ui.pickFor(S.pirate.textAgain || '{n}/{total}: {part}', n), n));
+      ui.say(ui.fill(ui.pickFor(S.pirate.pictureAgain, n), n));
       EPU.emit('ctf:replay', Object.keys(ctf.where).find((k) => ctf.where[k] === n));
     });
     EPU.on('ctf:update', paint);
+    // the note under the PARENTAL ADVISORY sticker only gets its text once the sticker has been peeled
+    const under = $('.p-under span'), underN = ctf.where.sticker;
+    const fillUnder = () => under && ctf.has(underN) && (under.textContent = ctf.part(underN));
+    EPU.on('ctf:update', fillUnder);
+    fillUnder();
     EPU.on('ctf:solved', refresh);
+    refresh();
     paint();
 
     const zoomable = () => EPU.layout.mode === 'port' && EPU.layout.s < 0.6;

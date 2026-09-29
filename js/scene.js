@@ -307,7 +307,8 @@
       face.add(h);
       return h;
     });
-    const backPic = EPU.ctf.picture('back');
+    const picOf = EPU.ctf.claimPictures();
+    const backPic = picOf('back');
     if (backPic) {
       const on = [];
       for (let r = 0; r < backPic.h; r++) for (let c = 0; c < backPic.w; c++) if (backPic.bits[r * backPic.w + c]) on.push([c, r]);
@@ -573,7 +574,7 @@
       tGeo.attributes.uv.needsUpdate = true;
     }
 
-    const eraPic = EPU.ctf.picture('era');
+    const eraPic = picOf('era');
     const secretTex = (() => {
       const w = eraPic ? eraPic.w : 1, h = eraPic ? eraPic.h : 1;
       const data = new Uint8Array(w * h * 4);
@@ -821,7 +822,7 @@
       A.sfx('boom');
     }
     function planHeartText() {
-      const pic = EPU.ctf.picture('heart');
+      const pic = picOf('heart');
       if (!pic) return null;
       const [ax, ay, az, cellPx, ink = '#ffffff'] = COMPO[EPU.layout.mode].heartText;
       const center = art(ax, ay, az), pitch = artSize(cellPx, az);
