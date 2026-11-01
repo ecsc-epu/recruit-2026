@@ -1,4 +1,4 @@
-# EPU Cybersecurity Club (ECSC) — Tuyển mem đợt 2 · 2026
+# EPU Cybersecurity Club (ECSC) — Tuyển mem 2026
 
 ## Cập nhật trang
 

@@ -8,9 +8,9 @@ window.SITE = {
     portrait: ["EPU CYBER", "SECURITY CLUB"]
   },
 
-  recruit: { big: "TUYỂN THÀNH VIÊN", small: "ĐỢT 2" },
+  recruit: { big: "TUYỂN THÀNH VIÊN", small: "2026" },
 
-  dateLine: "HẠN CHÓT 20.11 · 23:59",
+  dateLine: "HẠN CHÓT 25.12 · 23:59",
 
   form: {
     url: "https://forms.gle/8MTUuPABRM52jE7w8",
@@ -23,9 +23,9 @@ window.SITE = {
       track: "entry.660730388",
       note: "entry.201262861"
     },
-    tracks: ["Web Exploit", "Binary Exploit", "RE", "Cryptography", "Forensics"]
+    tracks: ["Web Exploit", "Binary Exploit", "Reverse Engineering", "Cryptography", "Forensics"]
   },
-  deadline: "2026-11-20T23:59:00+07:00",
+  deadline: "2026-12-25T23:59:00+07:00",
 
   music: {
     src: "assets/audio/unreal-superhero-3.mp3",
@@ -46,11 +46,11 @@ window.SITE = {
   ],
 
   dates: [
-    { d: "01.10", t: "MỞ ĐƠN" },
-    { d: "20.11", t: "ĐÓNG ĐƠN" },
-    { d: "25.11", t: "MINI CTF 24H" },
-    { d: "01.12", t: "PHỎNG VẤN" },
-    { d: "10.12", t: "WELCOME PARTY" }
+    { d: "08.11", t: "MỞ ĐƠN" },
+    { d: "25.12", t: "ĐÓNG ĐƠN" },
+    { d: "03.01", t: "MINI CTF" },
+    { d: "09-11.01", t: "PHỎNG VẤN" },
+    { d: "17.01", t: "WELCOME PARTY" }
   ],
 
   pirate: {
@@ -118,7 +118,7 @@ window.SITE = {
     ],
     // said when the player does the thing
     on: {
-      countdown: "Thấy cái đồng hồ đếm ngược kia không? Đồ giả đấy! Cái thật ta đã nhốt trong Rương Người Chết, nằm ngay cạnh trái tim của Davy Jones. Nhưng hạn chót thì là thật, hết giờ là tàu nhổ neo!",
+      countdown: "Thấy cái đồng hồ đếm ngược kia không? Hàng xịn của hội hải tặc đấy, đếm chuẩn từng giây! Hạn chót 25/12, hết giờ là tàu nhổ neo bỏ lại ngươi trên đảo hoang!",
       locked: "Muốn nhập bọn mà không có flag à? Ha! Đến con vẹt của ta còn phải giải flag mới được lên tàu đấy.",
       poke3d: "Thứ gì ở đây cũng bấm được, trừ trái tim của ta. Nó bị cá mập đớp mất từ năm 1998 rồi.",
       risenOn: [
@@ -219,7 +219,7 @@ window.SITE = {
   logo: "",
   photo: "",
 
-  ghost: "EPU CYBERSECURITY CLUB ✦ TUYỂN THÀNH VIÊN ĐỢT 2 ✦ ",
+  ghost: "EPU CYBERSECURITY CLUB ✦ TUYỂN THÀNH VIÊN 2026 ✦ ",
 
   intro: {
     line: "EPU Cybersecurity Club - Recruit 2026",
