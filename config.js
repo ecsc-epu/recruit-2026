@@ -37,28 +37,28 @@ window.SITE = {
   },
 
   tracks: [
-    { name: "WEB EXPLOITATION",    time: "4:04",  blurb: "Tìm lỗ hổng trong ứng dụng web như SQL injection, XSS, SSRF để lọt vào nơi không được phép vào." },
-    { name: "PWN",                 time: "13:37", blurb: "Khai thác lỗi bộ nhớ của chương trình như buffer overflow, ROP, heap để chiếm quyền điều khiển máy." },
-    { name: "CRYPTOGRAPHY",        time: "3:14",  blurb: "Tìm chỗ các hệ mã hoá như RSA, AES hay hàm băm bị dùng sai, rồi giải mã thứ lẽ ra phải bí mật." },
-    { name: "FORENSICS",           time: "2:56",  blurb: "Làm thám tử số, lần theo dấu vết trong gói tin mạng, bộ nhớ, ổ đĩa và ảnh giấu tin." },
-    { name: "REVERSE ENGINEERING", time: "6:66",  blurb: "Mổ xẻ chương trình không có mã nguồn bằng IDA, Ghidra để hiểu nó chạy ra sao. Keygen sinh ra từ đây." },
-    { name: "MISC / OSINT",        time: "0:42",  blurb: "Truy tìm thông tin từ nguồn công khai, cộng những thử thách lạ không thuộc mảng nào." }
+    { name: "WEB EXPLOITATION",    time: "4:04",  blurb: "Ở mảng này, về cơ bản là tìm lỗ hổng trong các ứng dụng web, khai thác các lỗ hổng đó để lọt vào nơi không được phép vào." },
+    { name: "PWN",                 time: "13:37", blurb: "Ở mảng này, ta sẽ khai thác các lỗ hổng tầng thấp như lỗi bộ nhớ của chương trình để chiếm quyền điều khiển máy." },
+    { name: "CRYPTOGRAPHY",        time: "3:14",  blurb: "Ở mảng này, ta sẽ tìm nơi mà các hệ mã hoá từ chính thống tới tự custom, bị dùng sai, rồi từ đó giải mã thứ lẽ ra phải bí mật." },
+    { name: "FORENSICS",           time: "2:56",  blurb: "Ở mảng này, ta sẽ lần theo dấu vết trong tất cả các thiết bị điện tử, từ các thiết bị IoT nhỏ, điện thoại cho tới máy tính và các hệ thống mạng lớn. Mục đích cuối cùng là làm rõ hành vi của kẻ xâm nhập." },
+    { name: "REVERSE ENGINEERING", time: "6:66",  blurb: "Ở mảng này, Ta sẽ học dể ổ xẻ chương trình (có thể là mã độc, game, ứng dụng của công ty đối thủ :)) ). Là một cướp biển chân chính, bạn phải biết RE để crack logic phần mềm và ăn trộm app đó, a hoyy " },
+    { name: "MISC / OSINT",        time: "0:42",  blurb: "Đây không hẳn là một mảng, mà nó giống như một phần tùy biến bổ sung, ta sẽ truy tìm thông tin từ nguồn công khai đối với OSINT và cũng như được thử các loại công nghệ lạ lùng với MISC." }
   ],
 
   dates: [
     { d: "08.11", t: "MỞ ĐƠN" },
     { d: "25.12", t: "ĐÓNG ĐƠN" },
     { d: "03.01", t: "MINI CTF" },
-    { d: "09-11.01", t: "PHỎNG VẤN" },
+    { d: "09.01", t: "PHỎNG VẤN" },
     { d: "17.01", t: "WELCOME PARTY" }
   ],
 
   pirate: {
-    intro: "Yo-ho-ho! Chào mừng lên tàu của ECSC! Ta đã giấu 10 mảnh flag quanh con tàu này. Cần manh mối thì cứ gõ vào ta.",
-    nudge: "Này thủy thủ, đứng ngây ra đó làm gì? Gõ vào ta một cái xem nào!",
+    intro: "Yo-ho-ho! Chào mừng lên tàu của ECSC! Ta đã giấu các mảnh flag quanh con tàu này. Nếu ngươi cần manh mối thì cứ gõ vào ta.",
+    nudge: "Này thủy thủ, sao cứ đứng ngây ra đó làm gì? Thử gõ vào ta một cái xem nào!",
     // a text piece is found (one line per piece, in turn)
     found: [
-      "Arrr, khá lắm! Mảnh {n}/{total} của ngươi đây, \"{part}\".",
+      "Arrr, khá đấy! Mảnh {n}/{total} của ngươi đây, \"{part}\".",
       "Thêm một đồng vàng vào rương! Mảnh {n}/{total} là \"{part}\".",
       "Mũi ngươi thính hơn cả chó săn của ta. Mảnh {n}/{total} là \"{part}\".",
       "Cất \"{part}\" cho kỹ, đừng để lũ hải âu tha mất. Đó là mảnh {n}/{total} đấy.",
@@ -72,9 +72,9 @@ window.SITE = {
     },
     // a picture piece is found / asked for again (keys = hiding places in ctf.where)
     foundPicture: {
-      back: "Ối, lão mặt trời có hình xăm sau gáy! Mảnh {n}/{total} đấy, chép lại nhanh, ta mù chữ không đọc hộ được đâu.",
-      heart: "Tim vỡ tan tành mà vẫn kịp nói lời thật lòng. Mảnh {n}/{total}, nhìn nhanh kẻo nó liền lại!",
-      era: "Phải về tận 1998 mới thấy chữ! Mảnh {n}/{total} đấy, dí mắt vào màn hình mà đọc.",
+      back: "Ối chà, lão mặt trời có hình xăm sau gáy thật luôn! Mảnh {n}/{total} đó, chép lại nhanh đi, ta mù chữ nên không đọc hộ được đâu.",
+      heart: "Cn tim vỡ tan tành rồi mà vẫn chưa kịp nói lời thật lòng. Mảnh {n}/{total} đây, nhìn nhanh đi kẻo nó liền lại!",
+      era: "Cái này hải về tận 1998 mới thấy chữ! Mảnh {n}/{total} đấy, dí mắt vào màn hình mà đọc.",
       other: "Arrr! Mảnh {n}/{total} vừa lộ diện rồi đấy. Nhìn cho kỹ vào, ta không đọc hộ đâu!"
     },
     pictureAgain: {
@@ -98,7 +98,7 @@ window.SITE = {
     hints: {
       pirate:  "Mảnh đầu tiên ta cất ngay trong túi áo. Gõ vào ta là có.",
       back:    "Lão mặt trời lúc nào cũng quay mặt ra cười. Chẳng ai biết sau gáy lão có gì… thử túm lão xoay lại xem.",
-      stars:   "Mấy ngôi sao hồng cứ bay vòng vòng quanh lão mặt trời như lũ hải âu. Tóm hết chúng lại đi!",
+      stars:   "Mấy ngôi sao hồng cứ bay vòng vòng quanh lão mặt trời như lũ hải âu. Tóm hết chúng xem cuộn băng kia mở ra bản thu gì…",
       heart:   "Trái tim pixel kia mong manh lắm. Mà tim có vỡ thì mới chịu nói thật lòng…",
       era:     "Hồi 1998 biển còn đen trắng. Kéo cả thế giới về quá khứ rồi nhìn kỹ lão mặt trời xem.",
       song:    "Tên CLB trên kia sáng bóng như dây đàn. Lướt tay qua một lượt xem, biết đâu nó hát cho ngươi nghe…",
@@ -108,13 +108,13 @@ window.SITE = {
       storage: "Trình duyệt nhớ dai hơn ngươi tưởng đấy. Mở mục Storage ra lục thử xem."
     },
     guide: [
-      "Cái cửa sổ tím có chữ keygen chính là đơn đăng ký. Điền tên, MSSV, email, SĐT, chọn mảng rồi dán flag vào ô License Key là xong.",
-      "Thấy 10 ô hồng dưới ô License Key không? Đó là sổ lưu mảnh flag. Tìm được mảnh nào thì ô đó sáng lên và được giữ lại.",
-      "Bấm vào ô hồng nào đã sáng thì ta đọc lại mảnh đó cho ngươi. Quên thì cứ bấm, ta không mắng đâu.",
+      "Cái cửa sổ tím keygen chính là đơn đăng ký. Điền tên, MSSV, email, SĐT, chọn mảng rồi dán flag vào ô License Key là xong.",
+      "Thấy các ô hồng dưới ô License Key không? Đó là nơi ta lưu các mảnh flag cho ngươi.",
+      "Bấm vào ô đã hồng, ta sẽ đọc lại mảnh đó cho ngươi. Quên thì cứ bấm, ta không mắng đâu.",
       "Nút ACTIVATE bị khoá cho tới khi ngươi dán đúng cả flag. Gom đủ 10 mảnh, ghép theo số thứ tự là ra.",
       "Cái thanh 1998 ◂▸ 2026 kéo qua lại được. Một bên là thế giới đen trắng hồi 1998, bên kia là 2026.",
       "Gần như thứ gì ở đây cũng kéo đi được, từ sticker, băng cassette cho tới cả ta. Riêng keygen thì kéo bằng thanh tiêu đề tím.",
-      { text: "Cuộn băng cassette kia có hai mặt. Mặt A là các mảng, mặt B là lịch trình. Bấm vào tên mảng để ta giới thiệu mảng đó.", desktop: true }
+      { text: "Cuộn băng cassette kia có hai mặt. Nghe đồn thu thập đủ 6 vì sao quanh lão mặt trời sẽ mở được bản thu bí mật!", desktop: true }
     ],
     // said when the player does the thing
     on: {
@@ -142,7 +142,7 @@ window.SITE = {
     // said once, the first time something happens
     tips: {
       firstPiece: "Thấy ô số {n} trong keygen vừa sáng hồng chưa? Mảnh nào tìm được sẽ được lưu vào đó, tắt trang mở lại vẫn còn. Bấm vào ô để ta đọc lại.",
-      firstStar: "Mỗi ngôi sao bắt được sẽ được đánh dấu ★ trên băng cassette. Bắt đủ 6 ngôi sao xem có gì hay không…"
+      firstStar: "Một ngôi sao đã thắp sáng trên cuốn băng! Thu thập đủ cả 6 ngôi sao xem bản thu bí mật là gì…"
     },
     about: [
       "Chưa biết gì về bảo mật vẫn lên tàu được. Chỉ cần tò mò và chịu học là đủ.",
@@ -207,7 +207,7 @@ window.SITE = {
     trackPlaceholder: "— chọn mảng —",
     keyPlaceholder: "ECSC{…}",
     button: "ACTIVATE",
-    credit: "something might be here"
+    credit: "something might be here, inspect me"
   },
 
   links: [
@@ -223,6 +223,6 @@ window.SITE = {
 
   intro: {
     line: "EPU Cybersecurity Club - Recruit 2026",
-    scroller: "EPU CYBERSECURITY CLUB PROUDLY PRESENTS ... TUYEN MEM DOT 2 - 2026 ... WEB * PWN * CRYPTO * FORENSICS * REVERSING ... 10 FLAG PIECES ARE HIDDEN IN HERE ... MUSIC: UNREAL SUPERHERO 3 BY KENET & REZ ... GREETZ TO ALL CTF PLAYERS, DEMOSCENERS AND CURIOUS MINDS ... TURN YOUR SPEAKERS UP ...     "
+    scroller: "EPU CYBERSECURITY CLUB PROUDLY PRESENTS ... TUYEN MEM - 2026 ... WEB * PWN * CRYPTO * FORENSICS * REVERSING ... 10 FLAG PIECES ARE HIDDEN IN HERE ... MUSIC: UNREAL SUPERHERO 3 BY KENET & REZ ... GREETZ TO ALL CTF PLAYERS, DEMOSCENERS AND CURIOUS MINDS ... TURN YOUR SPEAKERS UP ...     "
   }
 };

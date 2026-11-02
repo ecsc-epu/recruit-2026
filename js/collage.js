@@ -18,6 +18,7 @@
     stage.innerHTML = `
       <h1 class="piece p-title">
         <svg class="poster" aria-hidden="true"></svg>
+        <div class="bling-sparkles" aria-hidden="true"></div>
         <span class="sr">${esc(S.club)}: ${esc(S.recruit.big)} ${esc(S.recruit.small)}</span>
       </h1>
       <div class="piece p-date"><svg class="poster" aria-hidden="true"></svg><span class="sr">${esc(S.dateLine)}</span></div>
@@ -28,14 +29,22 @@
       <div class="piece p-jcard drag">
         <div class="jc-head"><b>${esc(S.short)}</b><span>MIXTAPE VOL.2 · 2026</span><i>C-60</i></div>
         <div class="jc-cols">
-          <div><h2>SIDE A · TRACKS</h2><ol class="jc-tracks">${S.tracks
+          <div>
+            <h2>SIDE A · TRACKS</h2>
+            <ol class="jc-tracks">${S.tracks
             .map((t, i) => `<li data-i="${i}"><span class="n">${String(i + 1).padStart(2, '0')}</span><span class="t">${esc(t.name)}</span><span class="m">${esc(t.time || '')}</span></li>`)
-            .join('')}</ol></div>
+            .join('')}<li class="jc-bonus" id="jcBonusTrack" title="Bản thu bí mật: Thu thập 6 vì sao để mở khóa"><span class="n">??</span><span class="t">HIDDEN TRACK</span><span class="m">?:??</span></li></ol>
+          </div>
           <div><h2>SIDE B · DATES</h2><ul class="jc-dates">${S.dates
             .map((d) => `<li><span class="n">${esc(d.d)}</span><span class="t">${esc(d.t)}</span></li>`)
             .join('')}</ul></div>
         </div>
-        <div class="jc-foot"><span>★ <b id="jcCount">0/${S.tracks.length}</b></span><span>DOLBY B NR · HI-BIAS</span></div>
+        <div class="jc-foot">
+          <span class="jc-star-status" id="jcStarStatus" title="Bản thu bí mật: Thu thập 6 vì sao để mở khóa">
+            ★ <b id="jcCount">0/${S.tracks.length}</b><span class="jc-hint" id="jcHint"> · BONUS TRACK [LOCKED]</span>
+          </span>
+          <span>DOLBY B NR · HI-BIAS</span>
+        </div>
       </div>
 
       <div class="piece p-recruit"><svg class="poster" aria-hidden="true"></svg></div>
@@ -59,7 +68,7 @@
           <label class="kg-row"><span>${esc(S.keygen.phoneLabel)}</span><input id="kgPhone" type="tel" inputmode="tel" autocomplete="tel" maxlength="20" placeholder="${esc(S.keygen.phonePlaceholder)}"></label>
           <label class="kg-row"><span>${esc(S.keygen.trackLabel)}</span><select id="kgTrack"><option value="">${esc(S.keygen.trackPlaceholder)}</option>${S.form.tracks.map((t) => `<option>${esc(t)}</option>`).join('')}</select></label>
           <label class="kg-row key"><span>${esc(S.keygen.keyLabel)}</span><input id="kgKey" autocomplete="off" spellcheck="false" maxlength="160" placeholder="${esc(S.keygen.keyPlaceholder)}"></label>
-          <div class="kg-parts" role="group" aria-label="flag pieces">${Array.from({ length: ctf.total }, (_, i) => `<i data-n="${i + 1}">${i + 1}</i>`).join('')}<b id="kgPartsN"></b></div>
+          <div class="kg-parts" role="group" aria-label="flag pieces">${Array.from({ length: ctf.total }, (_, i) => `<i data-n="${i + 1}" title="Mảnh #${i + 1}">${i + 1}</i>`).join('')}<b id="kgPartsN"></b><button type="button" class="kg-copy-btn" id="kgCopyFlag" title="Ghép và kiểm tra flag">CHECK</button></div>
           <div class="kg-foot">
             <button class="kg-go" id="kgGo">${esc(S.keygen.button)}</button>
             <p class="kg-status" id="kgStatus">Input System ID!</p>
@@ -67,6 +76,21 @@
           <p class="kg-meta">TRIAL EXPIRES IN <b id="kgTrial">--</b></p>
           <p class="kg-links">${S.links.map((l) => `<a href="${esc(l.url)}" target="_blank" rel="noopener">${esc(l.label)}</a>`).join(' · ')}</p>
           <p class="kg-credit">♪ ${esc(S.music.artist)} · ${esc(S.music.title)}</p>
+          <div class="kg-modal" id="kgModal" hidden>
+            <div class="kg-modal-inner win">
+              <div class="win-title">
+                <span class="wt" id="kgModalTitle">INPUT FLAG PIECE</span>
+                <span class="wb"><i id="kgModalClose">×</i></span>
+              </div>
+              <div class="kg-modal-body">
+                <input type="text" id="kgModalInput" spellcheck="false" autocomplete="off" placeholder="mảnh flag...">
+                <div class="kg-modal-actions">
+                  <button type="button" id="kgModalOk">OK</button>
+                  <button type="button" id="kgModalCancel">Cancel</button>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       </section>
 
@@ -390,6 +414,46 @@
   // the title is a xylophone: hover a letter to bounce it and play its note, click to spin it
   function titleToy() {
     const title = $('.p-title');
+    const sparkles = $('.bling-sparkles', title);
+    const starCoords = [
+      { x: 3, y: 15, d: 0, s: 1.2 },
+      { x: 9, y: 70, d: 0.7, s: 0.9 },
+      { x: 16, y: 18, d: 1.4, s: 1.3 },
+      { x: 23, y: 55, d: 0.3, s: 1.0 },
+      { x: 31, y: 12, d: 1.9, s: 1.4 },
+      { x: 39, y: 68, d: 0.8, s: 1.1 },
+      { x: 48, y: 16, d: 2.2, s: 1.5 },
+      { x: 56, y: 60, d: 0.4, s: 1.0 },
+      { x: 64, y: 14, d: 1.6, s: 1.3 },
+      { x: 72, y: 65, d: 1.1, s: 0.9 },
+      { x: 81, y: 15, d: 2.4, s: 1.4 },
+      { x: 89, y: 58, d: 0.5, s: 1.1 },
+      { x: 96, y: 20, d: 1.3, s: 1.2 }
+    ];
+    if (sparkles && !sparkles.children.length) {
+      sparkles.innerHTML = starCoords
+        .map(
+          (c) =>
+            `<svg class="bling-star" viewBox="0 0 24 24" style="left:${c.x}%;top:${c.y}%;--s:${c.s};animation-delay:${c.d}s;"><path d="M12 0 C12 7, 7 12, 0 12 C7 12, 12 17, 12 24 C12 17, 17 12, 24 12 C17 12, 12 7, 12 0 Z"/></svg>`
+        )
+        .join('');
+    }
+
+    const activateBling = () => {
+      title.classList.add('bling');
+    };
+
+    if (EPU.ctf && EPU.ctf.where && EPU.ctf.where.song && EPU.ctf.has(EPU.ctf.where.song)) {
+      activateBling();
+    }
+    EPU.on('title:song', activateBling);
+    EPU.on('ctf:found', (n) => {
+      if (EPU.ctf && EPU.ctf.where && n === EPU.ctf.where.song) {
+        EPU.audio.sfx('chime');
+        activateBling();
+      }
+    });
+
     let sweep = [];
     const hit = (t) => {
       t.classList.remove('up');
@@ -404,7 +468,11 @@
       if (sweep.length >= 14) {
         sweep = [];
         // the tune unlocks a flag piece; once it's been found he just comments on the music
-        if (EPU.ctf.has(EPU.ctf.where.song)) ui.sayOn && ui.sayOn('titleSong');
+        if (EPU.ctf.has(EPU.ctf.where.song)) {
+          ui.sayOn && ui.sayOn('titleSong');
+        } else {
+          EPU.audio.sfx('chime');
+        }
         EPU.emit('title:song');
       }
     };
@@ -749,17 +817,137 @@
     fields.forEach((inp) => inp.addEventListener('keydown', (e) => e.key === 'Enter' && go()));
 
     const parts = $('.kg-parts');
+    const picFallback = (n) => {
+      if (!ctf.has(n)) return '';
+      const m = { 2: 'F1IXUG0=', 6: 'EQtAPA==', 7: 'DlAKJAFebQ==' };
+      if (!m[n]) return '';
+      const raw = atob(m[n]), k = 'ecsc2026';
+      return [...raw].map((c, i) => String.fromCharCode(c.charCodeAt(0) ^ k.charCodeAt(i % k.length))).join('');
+    };
+
     const paint = () => {
-      $$('i', parts).forEach((el) => el.classList.toggle('got', ctf.has(+el.dataset.n)));
+      $$('i', parts).forEach((el) => {
+        const n = +el.dataset.n;
+        el.classList.toggle('got', ctf.has(n));
+        if (n === 3 || n === 5 || n === 9) el.classList.add('typeable');
+      });
       $('#kgPartsN').textContent = `${ctf.count()}/${ctf.total}`;
     };
+
+    // Modal elements for typing flag pieces 3, 5, 9
+    const modal = $('#kgModal');
+    const modalTitle = $('#kgModalTitle');
+    const modalInput = $('#kgModalInput');
+    const modalOk = $('#kgModalOk');
+    const modalCancel = $('#kgModalCancel');
+    const modalClose = $('#kgModalClose');
+    let currentInputN = 0;
+
+    const openInputModal = (n) => {
+      currentInputN = n;
+      modalTitle.textContent = `NHẬP MẢNH FLAG #${n}/10`;
+      const existing = localStorage.getItem('epu.user_part.' + n) || ctf.part(n) || '';
+      modalInput.value = existing;
+      modal.hidden = false;
+      setTimeout(() => modalInput.focus(), 50);
+    };
+
+    const closeInputModal = () => {
+      modal.hidden = true;
+      currentInputN = 0;
+    };
+
+    const submitInputModal = () => {
+      const n = currentInputN;
+      if (!n) return closeInputModal();
+      const val = modalInput.value.trim();
+      if (val) {
+        localStorage.setItem('epu.user_part.' + n, val);
+        if (n === 3) ctf.reveal('dom');
+        if (n === 5) ctf.reveal('console');
+        if (n === 9) ctf.reveal('storage');
+        paint();
+        ui.say(`Đã lưu mảnh #${n}/10: "${val}"`);
+        EPU.audio.sfx('ok');
+      }
+      closeInputModal();
+    };
+
+    if (modalOk) modalOk.addEventListener('click', submitInputModal);
+    if (modalCancel) modalCancel.addEventListener('click', closeInputModal);
+    if (modalClose) modalClose.addEventListener('click', closeInputModal);
+    if (modalInput) {
+      modalInput.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') submitInputModal();
+        if (e.key === 'Escape') closeInputModal();
+      });
+    }
+
+    // Auto-reveal if already saved previously
+    if (localStorage.getItem('epu.user_part.3')) ctf.reveal('dom');
+    if (localStorage.getItem('epu.user_part.5')) ctf.reveal('console');
+    if (localStorage.getItem('epu.user_part.9')) ctf.reveal('storage');
+
     parts.addEventListener('click', (e) => {
       const n = +(e.target.dataset && e.target.dataset.n);
-      if (!n || !ctf.has(n)) return;
+      if (!n) return;
+      if (n === 3 || n === 5 || n === 9) {
+        openInputModal(n);
+        return;
+      }
+      if (!ctf.has(n)) return;
       if (!ctf.isPicture(n)) return ui.say(ui.fill(ui.pickFor(S.pirate.textAgain || '{n}/{total}: {part}', n), n));
       ui.say(ui.fill(ui.pickFor(S.pirate.pictureAgain, n), n));
       EPU.emit('ctf:replay', Object.keys(ctf.where).find((k) => ctf.where[k] === n));
     });
+
+    const copyBtn = $('#kgCopyFlag');
+    if (copyBtn) {
+      copyBtn.addEventListener('click', () => {
+        const partsList = [];
+        for (let i = 1; i <= ctf.total; i++) {
+          const userVal = localStorage.getItem('epu.user_part.' + i);
+          const piece = userVal || ctf.part(i) || picFallback(i) || '';
+          partsList.push(piece);
+        }
+        const fullFlag = partsList.join('');
+        if (!fullFlag.trim()) {
+          ui.say('Chưa có mảnh flag nào để ghép!');
+          EPU.audio.sfx('error');
+          return;
+        }
+
+        const doCopy = () => {
+          copyBtn.textContent = 'CHECKED!';
+          copyBtn.classList.add('copied');
+          setTimeout(() => {
+            copyBtn.textContent = 'CHECK';
+            copyBtn.classList.remove('copied');
+          }, 2000);
+          key.value = fullFlag;
+          key.dispatchEvent(new Event('input'));
+          EPU.audio.sfx('ok');
+          const count = ctf.count();
+          ui.say(`Đã ghép ${count}/${ctf.total} mảnh và copy vào clipboard!`);
+        };
+
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          navigator.clipboard.writeText(fullFlag).then(doCopy).catch(() => {
+            key.value = fullFlag;
+            key.dispatchEvent(new Event('input'));
+            key.select();
+            document.execCommand('copy');
+            doCopy();
+          });
+        } else {
+          key.value = fullFlag;
+          key.dispatchEvent(new Event('input'));
+          key.select();
+          document.execCommand('copy');
+          doCopy();
+        }
+      });
+    }
     EPU.on('ctf:update', paint);
     // the note under the PARENTAL ADVISORY sticker only gets its text once the sticker has been peeled
     const under = $('.p-under span'), underN = ctf.where.sticker;
@@ -877,14 +1065,76 @@
       const i = +li.dataset.i;
       li.addEventListener('pointerenter', () => EPU.emit('track:hover', i));
       li.addEventListener('pointerleave', () => EPU.emit('track:hover', -1));
-      li.addEventListener('click', () => EPU.emit('track:show', i));
+      li.addEventListener('click', () => {
+        EPU.emit('track:show', i);
+        if (document.body.classList.contains('no3d')) {
+          if (!EPU.state.collected.has(i)) {
+            EPU.state.collected.add(i);
+            EPU.emit('star:collect', i);
+            if (EPU.state.collected.size === S.tracks.length) EPU.emit('stars:all');
+          }
+        }
+      });
     });
+
+    const updateStarStatus = () => {
+      const got = EPU.state.collected.size;
+      const total = S.tracks.length;
+      const countEl = $('#jcCount');
+      const hintEl = $('#jcHint');
+      const statusEl = $('#jcStarStatus');
+      const bonusEl = $('#jcBonusTrack');
+      if (countEl) countEl.textContent = `${got}/${total}`;
+      if (hintEl) {
+        if (got === 0) {
+          hintEl.textContent = ' · BONUS TRACK [LOCKED]';
+        } else if (got < total) {
+          hintEl.textContent = ` · BONUS TRACK [${got}/${total}]`;
+        } else {
+          hintEl.textContent = ' · BONUS TRACK [UNLOCKED]';
+        }
+      }
+      if (bonusEl) {
+        if (got >= total) {
+          bonusEl.innerHTML = '<span class="n">07★</span><span class="t">BONUS TRACK</span><span class="m">?:??</span>';
+          bonusEl.classList.add('unlocked');
+        } else {
+          bonusEl.innerHTML = `<span class="n">??</span><span class="t">HIDDEN TRACK</span><span class="m">?:??</span>`;
+          bonusEl.classList.remove('unlocked');
+        }
+      }
+      if (statusEl) {
+        statusEl.classList.toggle('got-all', got >= total);
+      }
+    };
+
+    if (EPU.ctf && EPU.ctf.where && EPU.ctf.where.stars && EPU.ctf.has(EPU.ctf.where.stars)) {
+      for (let k = 0; k < S.tracks.length; k++) {
+        EPU.state.collected.add(k);
+        const li = $(`.jc-tracks li[data-i="${k}"]`);
+        if (li) li.classList.add('got');
+      }
+    }
+    updateStarStatus();
+
     EPU.on('star:collect', (i) => {
       const li = $(`.jc-tracks li[data-i="${i}"]`);
       if (li) li.classList.add('got');
-      $('#jcCount').textContent = `${EPU.state.collected.size}/${S.tracks.length}`;
+      updateStarStatus();
     });
     EPU.on('star:hover', (i) => $$('.jc-tracks li').forEach((li) => li.classList.toggle('lit', +li.dataset.i === i)));
+
+    const tellSecret = () => {
+      if (EPU.state.collected.size < S.tracks.length) {
+        ui.say('Cuộn băng này có một bản thu âm bí mật… Nghe đồn lão mặt trời đang giấu 6 vì sao chìa khoá quanh mình đấy!');
+      } else {
+        ui.say('Bản thu âm bí mật đã được mở khóa rồi!');
+      }
+    };
+    const statusEl = $('#jcStarStatus');
+    if (statusEl) statusEl.addEventListener('click', tellSecret);
+    const bonusEl = $('#jcBonusTrack');
+    if (bonusEl) bonusEl.addEventListener('click', tellSecret);
   }
 
   function setSeam(v) {

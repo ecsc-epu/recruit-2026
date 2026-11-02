@@ -197,6 +197,12 @@
       case 'error': tone(150, 0.22, 'sawtooth', 0.45, 0.7); tone(110, 0.3, 'sawtooth', 0.45, 0.7, 0.13); break;
       case 'risen': tone(110, 1.3, 'sawtooth', 0.7, 0.35); noise(0.9, 400, 0.8); break;
       case 'wish':  semis(1318.5, [0, 3, 7, 10, 14, 19], 0.06, 0.12, 'triangle'); break;
+      case 'flag8':
+      case 'chime':
+        semis(523.25, [0, 4, 7, 12, 16, 19, 24], 0.045, 0.14, 'triangle');
+        setTimeout(() => semis(1046.5, [0, 4, 7, 12, 16, 24], 0.035, 0.12, 'sine'), 120);
+        setTimeout(() => tone(2093, 0.45, 'sine', 0.55), 260);
+        break;
     }
   };
 
