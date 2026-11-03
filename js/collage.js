@@ -209,8 +209,12 @@
       void p.offsetWidth;
       p.classList.add('hop');
     };
-    const say = (line) => {
+    let pendingQueue = null, queueTimer = null, currentLine = '', currentOnComplete = null;
+    const say = (line, onComplete) => {
       clearInterval(typing);
+      clearTimeout(queueTimer);
+      currentLine = line;
+      currentOnComplete = onComplete || null;
       bubble.classList.add('on');
       txt.textContent = '';
       const chars = [...line];
@@ -218,7 +222,18 @@
       typing = setInterval(() => {
         txt.textContent += chars[k] || '';
         if (k % 3 === 0 && chars[k] !== ' ') EPU.audio.sfx('talk');
-        if (++k >= chars.length) clearInterval(typing);
+        if (++k >= chars.length) {
+          clearInterval(typing);
+          typing = null;
+          const done = currentOnComplete;
+          currentOnComplete = null;
+          if (done) done();
+          if (pendingQueue) {
+            const next = pendingQueue;
+            pendingQueue = null;
+            queueTimer = setTimeout(() => ui.say(next), 2500);
+          }
+        }
       }, 22);
     };
     const fill = (t, n) => t.replace(/\{n\}/g, n).replace(/\{total\}/g, ctf.total).replace(/\{part\}/g, ctf.part(n));
@@ -237,12 +252,27 @@
     };
     ui.pickFor = pickFor;
 
-    ui.say = (line) => {
+    ui.say = (line, onComplete) => {
       ui.talked = true; // he has something to say: no need for the "tap me" nudge
       ui.lastSay = Date.now();
       ui.lastSayLen = [...line].length;
       hop();
-      say(line);
+      say(line, onComplete);
+    };
+    ui.isTalking = () => !!typing || (Date.now() - (ui.lastSay || 0) < 1500);
+    ui.queueSay = (line, delayAfter = 3500) => {
+      if (ui.isTalking()) {
+        pendingQueue = line;
+        if (!typing) {
+          clearTimeout(queueTimer);
+          queueTimer = setTimeout(() => {
+            pendingQueue = null;
+            ui.say(line);
+          }, delayAfter);
+        }
+      } else {
+        ui.say(line);
+      }
     };
     ui.sayIntro = () => {
       say(P.intro); // always the greeting first
@@ -273,6 +303,28 @@
 
     p.addEventListener('tap', () => {
       ui.talked = true;
+      if (typing) {
+        clearInterval(typing);
+        typing = null;
+        txt.textContent = currentLine;
+        const done = currentOnComplete;
+        currentOnComplete = null;
+        if (done) done();
+        if (pendingQueue) {
+          clearTimeout(queueTimer);
+          const next = pendingQueue;
+          pendingQueue = null;
+          queueTimer = setTimeout(() => ui.say(next), 1000);
+        }
+        return;
+      }
+      if (pendingQueue) {
+        clearTimeout(queueTimer);
+        const next = pendingQueue;
+        pendingQueue = null;
+        ui.say(next);
+        return;
+      }
       hop();
       if (ctf.where.pirate && !ctf.has(ctf.where.pirate)) return ctf.reveal('pirate');
       const kind = ROTA[turn++ % ROTA.length];
@@ -287,7 +339,12 @@
     });
     EPU.on('ctf:found', (n) => {
       const place = Object.keys(ctf.where).find((p) => ctf.where[p] === n);
-      ui.say(fill(ctf.isPicture(n) ? pickFor(P.foundPicture, n) : (P.foundAt && P.foundAt[place]) || pickFor(P.found, n), n));
+      const text = fill(ctf.isPicture(n) ? pickFor(P.foundPicture, n) : (P.foundAt && P.foundAt[place]) || pickFor(P.found, n), n);
+      if (ui.isTalking && ui.isTalking()) {
+        ui.queueSay(text, 3500);
+      } else {
+        ui.say(text);
+      }
       if (P.tips) onceTip('firstPiece', fill(P.tips.firstPiece, n));
     });
     EPU.on('star:collect', () => P.tips && EPU.layout.mode !== 'port' && onceTip('firstStar', P.tips.firstStar));
@@ -905,30 +962,57 @@
     if (copyBtn) {
       copyBtn.addEventListener('click', () => {
         const partsList = [];
+        let filledCount = 0;
         for (let i = 1; i <= ctf.total; i++) {
           const userVal = localStorage.getItem('epu.user_part.' + i);
           const piece = userVal || ctf.part(i) || picFallback(i) || '';
+          if (piece) filledCount++;
           partsList.push(piece);
         }
         const fullFlag = partsList.join('');
         if (!fullFlag.trim()) {
-          ui.say('Chưa có mảnh flag nào để ghép!');
+          ui.say('Sai rồi! Chưa có mảnh flag nào cả!');
+          copyBtn.textContent = 'WRONG!';
+          copyBtn.classList.remove('copied');
+          copyBtn.classList.add('wrong');
+          setTimeout(() => {
+            copyBtn.textContent = 'CHECK';
+            copyBtn.classList.remove('wrong');
+          }, 2000);
           EPU.audio.sfx('error');
           return;
         }
 
         const doCopy = () => {
-          copyBtn.textContent = 'CHECKED!';
-          copyBtn.classList.add('copied');
-          setTimeout(() => {
-            copyBtn.textContent = 'CHECK';
-            copyBtn.classList.remove('copied');
-          }, 2000);
           key.value = fullFlag;
           key.dispatchEvent(new Event('input'));
-          EPU.audio.sfx('ok');
-          const count = ctf.count();
-          ui.say(`Đã ghép ${count}/${ctf.total} mảnh và copy vào clipboard!`);
+          const isGood = ctf.check(fullFlag);
+
+          if (isGood) {
+            copyBtn.textContent = 'CHECKED!';
+            copyBtn.classList.remove('wrong');
+            copyBtn.classList.add('copied');
+            setTimeout(() => {
+              copyBtn.textContent = 'CHECK';
+              copyBtn.classList.remove('copied');
+            }, 2000);
+            setTimeout(() => EPU.audio.sfx('ok'), 60);
+            ui.say('Chính xác rồi! Chúc mừng mi nhé, lên tàu thôi!');
+          } else {
+            copyBtn.textContent = 'WRONG!';
+            copyBtn.classList.remove('copied');
+            copyBtn.classList.add('wrong');
+            setTimeout(() => {
+              copyBtn.textContent = 'CHECK';
+              copyBtn.classList.remove('wrong');
+            }, 2000);
+            setTimeout(() => EPU.audio.sfx('error'), 60);
+            if (filledCount < ctf.total) {
+              ui.say(`Sai rồi! Mới ghép được ${filledCount}/${ctf.total} mảnh thôi, tìm đủ rồi thử lại nhé!`);
+            } else {
+              ui.say('Sai rồi! Flag chưa chính xác, hãy kiểm tra lại các mảnh nhé!');
+            }
+          }
         };
 
         if (navigator.clipboard && navigator.clipboard.writeText) {
@@ -1068,10 +1152,20 @@
       li.addEventListener('click', () => {
         EPU.emit('track:show', i);
         if (document.body.classList.contains('no3d')) {
+          const nn = (n) => String(n + 1).padStart(2, '0');
+          const base = S.pirate.track.replace('{name}', `${nn(i)} · ${S.tracks[i].name}`).replace('{blurb}', S.tracks[i].blurb);
+          const allFound = EPU.state.collected.size >= S.tracks.length;
           if (!EPU.state.collected.has(i)) {
-            EPU.state.collected.add(i);
-            EPU.emit('star:collect', i);
-            if (EPU.state.collected.size === S.tracks.length) EPU.emit('stars:all');
+            const line = !allFound ? base + ' (+1 ★)' : base;
+            ui.say(line, () => {
+              if (!EPU.state.collected.has(i)) {
+                EPU.state.collected.add(i);
+                EPU.emit('star:collect', i);
+                if (EPU.state.collected.size === S.tracks.length) EPU.emit('stars:all');
+              }
+            });
+          } else {
+            ui.say(base);
           }
         }
       });

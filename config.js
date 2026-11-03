@@ -36,14 +36,38 @@ window.SITE = {
     soundcloudUrl: "https://soundcloud.com/demoscenemusic/unreal-superhero-3"
   },
 
-  tracks: [
-    { name: "WEB EXPLOITATION",    time: "4:04",  blurb: "Ở mảng này, về cơ bản là tìm lỗ hổng trong các ứng dụng web, khai thác các lỗ hổng đó để lọt vào nơi không được phép vào." },
-    { name: "PWN",                 time: "13:37", blurb: "Ở mảng này, ta sẽ khai thác các lỗ hổng tầng thấp như lỗi bộ nhớ của chương trình để chiếm quyền điều khiển máy." },
-    { name: "CRYPTOGRAPHY",        time: "3:14",  blurb: "Ở mảng này, ta sẽ tìm nơi mà các hệ mã hoá từ chính thống tới tự custom, bị dùng sai, rồi từ đó giải mã thứ lẽ ra phải bí mật." },
-    { name: "FORENSICS",           time: "2:56",  blurb: "Ở mảng này, ta sẽ lần theo dấu vết trong tất cả các thiết bị điện tử, từ các thiết bị IoT nhỏ, điện thoại cho tới máy tính và các hệ thống mạng lớn. Mục đích cuối cùng là làm rõ hành vi của kẻ xâm nhập." },
-    { name: "REVERSE ENGINEERING", time: "6:66",  blurb: "Ở mảng này, Ta sẽ học dể ổ xẻ chương trình (có thể là mã độc, game, ứng dụng của công ty đối thủ :)) ). Là một cướp biển chân chính, bạn phải biết RE để crack logic phần mềm và ăn trộm app đó, a hoyy " },
-    { name: "MISC / OSINT",        time: "0:42",  blurb: "Đây không hẳn là một mảng, mà nó giống như một phần tùy biến bổ sung, ta sẽ truy tìm thông tin từ nguồn công khai đối với OSINT và cũng như được thử các loại công nghệ lạ lùng với MISC." }
-  ],
+tracks: [
+  { 
+    name: "WEB EXPLOITATION", 
+    time: "4:04", 
+    blurb: "Ahoy! Ở mảng này, thủy thủ đoàn sẽ tập trung tấn công vào các trang web, vốn là bộ mặt đại diện của gần như mọi công ty trên internet. Nhiệm vụ của chúng ta là rà soát và khai thác triệt để các lỗ hổng bảo mật ẩn giấu để lọt vào những hệ thống được quản lý nghiêm ngặt. Giống như một chuyến phiêu lưu săn lùng kho báu, để xâm nhập thành công vào hầm mộ Aztec, ta cần trang bị kiến thức vững vàng để nhìn thấu và bẻ gãy các lớp phòng thủ này, yo-ho-ho!" 
+  },
+  { 
+    name: "PWN", 
+    time: "13:37", 
+    blurb: "Arrr! Ở mảng này, ta sẽ đi sâu vào khoang máy để khai thác các lỗ hổng bảo mật ở tầng thấp nhất của hệ thống, điển hình như các lỗi quản lý bộ nhớ của một chương trình. Bằng những kỹ thuật tấn công tinh vi, mục tiêu tối thượng là vượt qua các cơ chế phòng thủ, thao túng luồng thực thi và qua đó đường hoàng bước lên đài chỉ huy để chiếm quyền điều khiển hoàn toàn máy tính của mục tiêu." 
+  },
+  { 
+    name: "CRYPTOGRAPHY", 
+    time: "3:14", 
+    blurb: "Harrr! Ở mảng này, ta sẽ dấn thân vào thế giới của những con số và thuật toán mã hóa phức tạp. Nhiệm vụ của ta là lùng sục điểm yếu tại những nơi mà các hệ thống mật mã từ chuẩn quốc tế cho tới các thuật toán tự thiết kế bị triển khai sai lầm. Bằng bộ óc ranh mãnh của một tay cáo già biển cả, ta sẽ giải mã thành công những thông tin vô giá lẽ ra phải được giấu kín dưới đáy đại dương." 
+  },
+  { 
+    name: "FORENSICS", 
+    time: "2:56", 
+    blurb: "Ahoy! Ở mảng này, các tân binh sẽ hóa thân thành những tay thợ săn dấu vết khét tiếng của băng hải tặc. Nhiệm vụ của bạn là tỉ mỉ lần theo từng manh mối kỹ thuật số còn vương lại trên mọi thiết bị, từ các đồ vật IoT bé tẹo, chiếc điện thoại thông minh cho tới các hệ thống máy tính và mạng lưới lớn. Mục đích cuối cùng là chắp vá lại toàn bộ bức tranh hiện trường, làm sáng tỏ mọi hành vi, động cơ và phương thức của những kẻ gian dám lén lút xâm nhập vào con tàu của chúng ta." 
+  },
+  { 
+    name: "REVERSE ENGINEERING", 
+    time: "6:66", 
+    blurb: "Yo-ho! Ở mảng này, ta sẽ tìm hiểu cách mổ xẻ cấu trúc cốt lõi của bất kỳ chương trình nào, dù đó là mã độc, một tựa game hay ứng dụng của công ty đối thủ. Là một tên cướp biển khét tiếng và chân chính, bạn bắt buộc phải thành thạo kỹ thuật RE để bẻ gãy logic bảo vệ phức tạp nhất của phần mềm, thấu hiểu nguyên lý vận hành và ngang nhiên cuỗm sạch công nghệ của chúng mang về sào huyệt, a hoyy!" 
+  },
+  { 
+    name: "MISC / OSINT", 
+    time: "0:42", 
+    blurb: "Aye aye! Đây không hẳn là một mảng độc lập mà giống như một vùng biển khám phá tự do và đầy bất ngờ. Đối với OSINT, ta sẽ hóa thân thành những tay tình báo sừng sỏ, miệt mài truy tìm và chắp vá thông tin vô giá từ các nguồn dữ liệu công khai trên mạng. Đồng thời, thông qua rương báu MISC, hỡi những con sói biển, các người sẽ được thỏa sức vọc vạch và đối mặt với vô vàn các loại công nghệ độc đáo và lạ lùng nhất." 
+  }
+],
 
   dates: [
     { d: "08.11", t: "MỞ ĐƠN" },
@@ -54,8 +78,8 @@ window.SITE = {
   ],
 
   pirate: {
-    intro: "Yo-ho-ho! Chào mừng lên tàu của ECSC! Ta đã giấu các mảnh flag quanh con tàu này. Nếu ngươi cần manh mối thì cứ gõ vào ta.",
-    nudge: "Này thủy thủ, sao cứ đứng ngây ra đó làm gì? Thử gõ vào ta một cái xem nào!",
+    intro: "Yo-ho-ho! Chào mừng lên tàu của ECSC! Ta đã giấu các mảnh flag quanh con tàu này. Nếu ngươi cần manh mối thì cứ gõ vào ta, ta sẽ giải thích mọi thứ cho!!",
+    nudge: "Này thủy thủ, sao cứ đứng ngây ra đó làm gì vậy? Thử gõ vào ta một cái xem nào!",
     // a text piece is found (one line per piece, in turn)
     found: [
       "Arrr, khá đấy! Mảnh {n}/{total} của ngươi đây, \"{part}\".",
@@ -63,107 +87,107 @@ window.SITE = {
       "Mũi ngươi thính hơn cả chó săn của ta. Mảnh {n}/{total} là \"{part}\".",
       "Cất \"{part}\" cho kỹ, đừng để lũ hải âu tha mất. Đó là mảnh {n}/{total} đấy.",
       "Yo-ho! Mảnh {n}/{total} lộ diện rồi, \"{part}\".",
-      "Ta mà tò mò được bằng nửa ngươi thì đã thành vua hải tặc. Mảnh {n}/{total} là \"{part}\".",
-      "Chép vội \"{part}\" vào tay đi kẻo quên. Mảnh {n}/{total} đấy!"
+      "Ta mà tò mò được bằng nửa ngươi thì giờ đã thành vua hải tặc rồi. Mảnh {n}/{total} là \"{part}\".",
+      "Chép nhanh dòng \"{part}\" vào tay đi kẻo quên. Mảnh {n}/{total} đấy!"
     ],
     // a text piece with its own line (keys = hiding places in ctf.where); the others use `found`
     foundAt: {
-      song: "Bravo! Ngón đàn nghe như mèo giẫm lên bàn phím, nhưng cái tên CLB vẫn chịu nhả ra mảnh {n}/{total}, \"{part}\". Thôi đừng bỏ nghề hacker để đi làm nhạc công nhé."
+      song: "Bravo! Ngón đàn gì nghe thì như mèo giẫm lên bàn phím ấy, nhưng mà dòng tên CLB đó vẫn chịu nhả ra mảnh {n}/{total}, \"{part}\". Thôi thì đừng có bỏ nghề hacker để đi làm nhạc công đấy nhé."
     },
     // a picture piece is found / asked for again (keys = hiding places in ctf.where)
     foundPicture: {
-      back: "Ối chà, lão mặt trời có hình xăm sau gáy thật luôn! Mảnh {n}/{total} đó, chép lại nhanh đi, ta mù chữ nên không đọc hộ được đâu.",
-      heart: "Cn tim vỡ tan tành rồi mà vẫn chưa kịp nói lời thật lòng. Mảnh {n}/{total} đây, nhìn nhanh đi kẻo nó liền lại!",
-      era: "Cái này hải về tận 1998 mới thấy chữ! Mảnh {n}/{total} đấy, dí mắt vào màn hình mà đọc.",
+      back: "Ối chà, lão mặt trời mà cũng có hình xăm sau gáy thật luôn! Mảnh {n}/{total} đó, chép lại nhanh đi, chứ ta mù chữ nên không đọc hộ ngươi được đâu.",
+      heart: "Con tim vỡ tan tành rồi mà vẫn chưa chịu nói lời thật lòng. Mảnh {n}/{total} đây, nhìn nhanh đi kẻo nó liền lại!",
+      era: "Năm 1988, ta từng thủ thỉ với một tên chột trong một quán bar nhỏ bẩn thỉu ở vùng biển Hà Lan, ta mách hắn nơi ta dấu vàng của nhà vua, cuối cùng thì ta cụt một tay vì phát đạn của tên ranh mãnh đó, Mảnh {n}/{total} đấy, dí mắt vào màn hình mà đọc đi.",
       other: "Arrr! Mảnh {n}/{total} vừa lộ diện rồi đấy. Nhìn cho kỹ vào, ta không đọc hộ đâu!"
     },
     pictureAgain: {
-      back: "Mảnh {n} xăm sau gáy lão mặt trời. Ta xoay lão lại cho ngươi xem, đừng bắt ta đọc, ta mù chữ!",
-      heart: "Mảnh {n} hả? Để ta đập vỡ trái tim kia lần nữa. Nhìn cho kỹ, ta không tốn thuốc súng mãi đâu.",
-      era: "Mảnh {n} chỉ hiện ở năm 1998. Ta sinh năm 1720, với ta 1998 còn là tương lai đấy!",
-      other: "Mảnh {n} thì phải tự nhìn bằng mắt mình. Ta mù chữ, ta không đọc hộ đâu!"
+      back: "Mảnh {n} xăm sau gáy lão mặt trời đó. Ta xoay lão lại cho ngươi nhìn thôi chứ đừng bắt ta đọc, ta mù chữ mà!",
+      heart: "Mảnh {n} hả? Để ta đập vỡ trái tim kia lần nữa. Nhìn cho kỹ đi, ta không tốn thuốc súng mãi đâu.",
+      era: "Mảnh {n} chỉ hiện ra khi ngươi quay ngược thời gian thôi. Ta sinh năm 1720, với ta 1998 còn là tương lai đấy!",
+      other: "Mảnh {n} thì ngươi phải tự nhìn bằng mắt mình đi. Ta mù chữ, ta không đọc hộ đâu!"
     },
     textAgain: [
-      "Mảnh {n} là \"{part}\". Quên nữa là ta bắt đi lau boong tàu đấy.",
-      "Lại quên à? Mảnh {n} là \"{part}\". Trí nhớ còn kém hơn cả ta.",
-      "\"{part}\", mảnh {n} đấy. Lần này ghi ra giấy giùm ta."
+      "Mảnh {n} là \"{part}\". Ngươi cứ quên nữa là ta bắt đi lau boong tàu đấy.",
+      "Lại quên à? Mảnh {n} là \"{part}\". Trí nhớ còn kém hơn cả mụ vợ ta.",
+      "\"{part}\", mảnh {n} đấy. Lần này ghi ra giấy giùm ta đi."
     ],
-    allFound: "Đủ cả 10 mảnh rồi! Xếp chúng theo số thứ tự rồi dán vào ô License Key của keygen nhé.",
-    solved: "Trời đất quỷ thần ơi, ngươi giải được thật rồi! Điền nốt thông tin rồi bấm ACTIVATE, ta sẽ gửi flag đi kèm.",
+    allFound: "Đủ cả 10 mảnh rồi! Xếp chúng theo số thứ tự rồi nhập vào ô License Key nhé.",
+    solved: "Trời đất quỷ thần ơi, ngươi giải được thật rồi! Điền nốt thông tin rồi bấm xác nhận đi, ta sẽ nhét thông tin vào trong cái chai thủy tinh này rồi ném nó xuống biển, con sóng và thủy chiều sẽ đưa nó tới đúng nơi cho ngươi.",
     closeJoke: "Định bỏ trốn khỏi tàu à? Không dễ thế đâu, thủy thủ!",
     registered: "Arrr! Ta đã ghi tên ngươi vào sổ thủy thủ rồi. Nhớ để ý email nhé!",
-    solvedNeedInfo: "Giỏi lắm, thủy thủ! Nhưng flag chưa được ghi nhận đâu. Điền tên, MSSV, email, SĐT, chọn mảng rồi bấm ACTIVATE thì ta mới biết ai là người giải!",
-    solvedReminder: "Ê, ngươi giải xong flag rồi mà chưa đăng ký kìa! Điền keygen rồi bấm ACTIVATE đi, không là mất điểm cộng đấy.",
+    solvedNeedInfo: "Giỏi lắm, thủy thủ! Nhưng flag chưa được ghi nhận đâu. Điền tên, MSSV, email, SĐT, chọn mảng rồi bấm xác nhận đi rồi ta mới biết ai là người gửi chứ!",
+    solvedReminder: "Oi, ngươi giải xong flag rồi mà chưa đăng ký kìa! Điền thông tin rồi bấm xác nhận đi, không là mất điểm cộng đấy.",
     track: "{name} à? {blurb}",
     hints: {
-      pirate:  "Mảnh đầu tiên ta cất ngay trong túi áo. Gõ vào ta là có.",
-      back:    "Lão mặt trời lúc nào cũng quay mặt ra cười. Chẳng ai biết sau gáy lão có gì… thử túm lão xoay lại xem.",
-      stars:   "Mấy ngôi sao hồng cứ bay vòng vòng quanh lão mặt trời như lũ hải âu. Tóm hết chúng xem cuộn băng kia mở ra bản thu gì…",
-      heart:   "Trái tim pixel kia mong manh lắm. Mà tim có vỡ thì mới chịu nói thật lòng…",
-      era:     "Hồi 1998 biển còn đen trắng. Kéo cả thế giới về quá khứ rồi nhìn kỹ lão mặt trời xem.",
-      song:    "Tên CLB trên kia sáng bóng như dây đàn. Lướt tay qua một lượt xem, biết đâu nó hát cho ngươi nghe…",
-      sticker: "Mấy cái nhãn dán kia trông khả nghi lắm. Bóc thử một cái xem bên dưới giấu gì.",
-      dom:     "Keygen này có một dòng ghi chú giấu trong mã nguồn. Bấm F12 rồi soi kỹ phần Inspector.",
-      console: "Có kẻ đã để lại lời nhắn trong Console. Bấm F12 mà xem.",
-      storage: "Trình duyệt nhớ dai hơn ngươi tưởng đấy. Mở mục Storage ra lục thử xem."
+      pirate:  "Mảnh đầu tiên ta cất ngay trong túi áo đây. Gõ vào ta là có.",
+      back:    "Lão mặt trời lúc nào cũng quay mặt ra cười. Chẳng ai biết lão giấu gì…",
+      stars:   "Mấy ngôi sao hồng cứ bay vòng vòng quanh lão mặt trời như lũ hải âu. Thử tóm hết chúng xem…",
+      heart:   "Trái tim kia mong manh lắm. Mà tim có vỡ thì mới chịu nói thật lòng…",
+      era:     "Bí mật thường đi qua ta mà chẳng hề hay biết gì! Thử kéo cả thế giới về quá khứ xem.",
+      song:    "Ngươi từng chơi đàn chưa? Thử xem, biết đâu ta lại tìm được nhạc công cho con tàu thì sao?",
+      sticker: "Có thằng chết tiệt nào cứ dán mấy cái áp phích nên boong tàu ta. Ngươi bóc chúng ra được không?",
+      dom:     "Có một dòng chú thích giấu trong mã nguồn. Ngươi đã từng nghe tới chức năng Inspector của trình duyệt chưa?",
+      console: "Có kẻ đã để lại lời nhắn trong Console. Có khi là mụ vợ ta đòi ta đem tiền về cho mụ",
+      storage: "Trình duyệt nhớ nhiều thứ hơn ngươi tưởng đấy. Ngươi có biết trình duyệt lưu những thứ như Cache hay Cookie ở đâu không?"
     },
     guide: [
-      "Cái cửa sổ tím keygen chính là đơn đăng ký. Điền tên, MSSV, email, SĐT, chọn mảng rồi dán flag vào ô License Key là xong.",
+      "Cái cửa sổ keygen chính là nơi ngươi có thể đăng ký. Tên thủy thủ kia, hãy Điền tên, MSSV, email, SĐT, chọn mảng, dán code vào ô License Key đi, rồi ta sẽ xem xét cho ngươi lên boong tàu.",
       "Thấy các ô hồng dưới ô License Key không? Đó là nơi ta lưu các mảnh flag cho ngươi.",
-      "Bấm vào ô đã hồng, ta sẽ đọc lại mảnh đó cho ngươi. Quên thì cứ bấm, ta không mắng đâu.",
-      "Nút ACTIVATE bị khoá cho tới khi ngươi dán đúng cả flag. Gom đủ 10 mảnh, ghép theo số thứ tự là ra.",
-      "Cái thanh 1998 ◂▸ 2026 kéo qua lại được. Một bên là thế giới đen trắng hồi 1998, bên kia là 2026.",
-      "Gần như thứ gì ở đây cũng kéo đi được, từ sticker, băng cassette cho tới cả ta. Riêng keygen thì kéo bằng thanh tiêu đề tím.",
+      "Bấm vào những ô đã hiện màu hồng rồi ta sẽ đọc lại mảnh đó cho ngươi. Quên thì cứ bấm, ta không mắng đâu. Hoi Hoi",
+      "Nút ACTIVATE bị khoá cho tới khi ngươi dán đúng tất cả các mảnh flag. Cứ gom đủ 10 mảnh, ghép theo số thứ tự là sẽ ra.",
+      "Cái thanh 1998 ◂▸ 2026 kéo qua lại được đó. Một bên là thế giới đen trắng hồi 1998, bên kia là 2026.",
+      "Gần như thứ gì ở đây cũng di chuyển được, từ sticker, băng cassette cho tới cả ta. Riêng keygen thì kéo bằng thanh tiêu đề tím.",
       { text: "Cuộn băng cassette kia có hai mặt. Nghe đồn thu thập đủ 6 vì sao quanh lão mặt trời sẽ mở được bản thu bí mật!", desktop: true }
     ],
     // said when the player does the thing
     on: {
-      countdown: "Thấy cái đồng hồ đếm ngược kia không? Hàng xịn của hội hải tặc đấy, đếm chuẩn từng giây! Hạn chót 25/12, hết giờ là tàu nhổ neo bỏ lại ngươi trên đảo hoang!",
+      countdown: "Thấy cái đồng hồ đếm ngược kia không? Hạn chót là 25/12, hết giờ là tàu nhổ neo bỏ lại ngươi trên đảo hoang đó! Nhanh đăng ký đi!",
       locked: "Muốn nhập bọn mà không có flag à? Ha! Đến con vẹt của ta còn phải giải flag mới được lên tàu đấy.",
-      poke3d: "Thứ gì ở đây cũng bấm được, trừ trái tim của ta. Nó bị cá mập đớp mất từ năm 1998 rồi.",
+      poke3d: "Thứ gì ở đây cũng tác động được, trừ trái tim của ta. Nó bị cá mập đớp mất từ năm 1880 rồi.",
       risenOn: [
-        "Trời đỏ như máu thế này?! Tàu ta bị nguyền rồi! Ta đã dặn đừng có đụng vào cái sọ kia mà!",
-        "Lời nguyền đồng vàng Aztec đây mà! Dưới ánh trăng ta sẽ hoá thành bộ xương… may mà ta vốn gầy sẵn.",
-        "Nhạc chậm lại, trời đỏ lòm… Đến tàu ma Flying Dutchman cũng không rùng rợn bằng cái trang này.",
-        "Ta không sợ! Ta chỉ… run vì gió biển thôi. Ai đó tắt cái lời nguyền này đi được không?"
+        "Sao trời đỏ như máu thế này?! Tàu ta bị nguyền rồi! Ta đã dặn ngươi đừng có đụng vào cái sọ kia mà!",
+        "Lời nguyền đồng vàng Aztec ư?! Dưới ánh trăng này, ta sẽ hoá thành bộ xương mất… mà cũng may ta vốn gầy sẵn.",
+        "Không gian huyền ảo, trời thì đỏ lòm… Đến tàu ma Flying Dutchman cũng không rùng rợn bằng cái web page này.",
+        "Ta đâu có sợ! Ta chỉ… hơi run vì gió biển thôi. Ai đó tắt cái lời nguyền này đi dùm cái được không?"
       ],
       risenOff: [
-        "Phù, hết nguyền rồi. Lần sau đụng vào cái sọ thì báo trước ta một tiếng!",
-        "Trời hồng lại rồi. Nói trước, ban nãy ta không hề sợ, chỉ đang tập nhảy thôi.",
-        "Lời nguyền đã giải! Giờ thì ta cần một ly rum cho hoàn hồn."
+        "Phù, hết rồi. Lần sau ngươi có đụng vào cái sọ thì cũng báo trước ta một tiếng!",
+        "Này, ban nãy ta không hề sợ nhé, ta chỉ đang tập nhảy thôi.",
+        "Lời nguyền được giải rồi! Giờ thì ta cần một ly rum cho hoàn hồn cái đã."
       ],
-      titleSong: "Ngươi vừa chơi đàn trên tên CLB của ta đấy à? Hay đấy, nhưng đừng bỏ nghề hacker để đi làm nhạc công nhé.",
-      squeeze: "Thôi đừng bóp nữa! Máu chảy hết thì lấy gì mà tuyển thành viên? Ta còn phải lau boong tàu đấy.",
-      muteFound: "Bóp mạnh quá, cái nút tắt nhạc ta giấu văng ra góc màn hình rồi kìa! Đừng bảo ai là ta giấu nó nhé.",
-      muteOn: "Ai tắt nhạc của ta?! Được thôi, ta tự hát vậy. Yo-ho, yo-ho, cuộc đời hải tặc là ta…",
-      muteOff: "Nhạc về rồi! Tai ta cảm ơn ngươi, chứ giọng ta thì cá mập nghe còn bỏ chạy.",
-      dragBubble: "Ngươi định kéo lời vàng ý ngọc của ta đi đâu thế hả? Kéo thì kéo, nhưng bấm vào là ta lại lải nhải tiếp đấy."
+      titleSong: "Ngươi vừa chơi đàn trên tên CLB đấy à? Hay đấy, nhưng làm gì thì làm, đừng bỏ nghề hacker mà đi làm nhạc công đấy nhé.",
+      squeeze: "Thôi đừng bóp nó nữa! Máu mà chảy ra hết thì lấy gì để đó để tuyển thành viên? Mà ta còn phải lau boong tàu đấy nhá.",
+      muteFound: "Úi có cái gì văng ra góc màn hình rồi kìa! Đừng bảo ai là ta giấu nó nhé.",
+      muteOn: "Ai tắt nhạc của ta vậy?! Được thôi, để ta tự hát vậy. Yo-ho, yo-ho, cuộc đời hải tặc là ta…",
+      muteOff: "Nhạc lên rồi! Tai ta cảm ơn ngươi, chứ giọng ta thì cá mập nghe còn bỏ chạy nữa.",
+      dragBubble: "Ngươi định lấy lời vàng ý ngọc của ta đi đâu thế hả?"
     },
     // said once, the first time something happens
     tips: {
-      firstPiece: "Thấy ô số {n} trong keygen vừa sáng hồng chưa? Mảnh nào tìm được sẽ được lưu vào đó, tắt trang mở lại vẫn còn. Bấm vào ô để ta đọc lại.",
+      firstPiece: "Thấy ô số {n} trong keygen vừa sáng hồng lên chưa? Mảnh nào ngươi tìm được sẽ được lưu vào đó, bấm vào để ta đọc lại cho mà nghe.",
       firstStar: "Một ngôi sao đã thắp sáng trên cuốn băng! Thu thập đủ cả 6 ngôi sao xem bản thu bí mật là gì…"
     },
     about: [
-      "Chưa biết gì về bảo mật vẫn lên tàu được. Chỉ cần tò mò và chịu học là đủ.",
-      "Tụi ta sinh hoạt một, hai buổi mỗi tuần. Cuối tuần thì cả bọn cùng nhau đi đánh CTF."
+      "Chưa biết gì về bảo mật vẫn lên tàu được chứ sao không. Nhưng ngươi cũng cần phải biết tò mò, chịu khó và phải chịu học hỏi. Không thì ta sẽ trói tay và bắt ngươi đi trên ván gỗ!",
+      "Tụi ta sinh hoạt cứ một, hai buổi mỗi tuần. Cuối tuần thì cả bọn cùng nhau đi cướp, ngươi mong đợi gì ở một băng cướp biển chứ, Ahoy!."
     ],
     schedule: "Lịch trình chuyến đi của tụi ta là {dates}.",
     wishes: [
-      "Ngươi ước gì? AC hết bài à? Cứ mơ đi, thủy thủ!",
-      "Ước first blood à? Được thôi, miễn là cả đội kia ngủ quên.",
-      "Ước cả đời không gặp segfault? Ngôi sao này ban điều ước, không làm phép màu.",
-      "Ước flag nằm sẵn trong /robots.txt à? Ngây thơ quá, thủy thủ.",
+      "Ngươi ước gì cơ? AC hết bài à? Cứ mơ đi, thủy thủ!",
+      "Ước được first blood à? Được thôi, miễn là cả đội bạn ngủ quên.",
+      "Ước cả đời không gặp segfault à? Ngôi sao này ban điều ước thôi, không làm phép màu.",
+      "Ước flag nằm sẵn trong /robots.txt à? Ngây thơ quá đấy, thủy thủ.",
       "Ngươi vừa thành tâm cầu nguyện với một ngôi sao nhựa. Ta không có gì để nói thêm.",
-      "Ước crypto dễ hơn à? Toán học không nghe thấy lời ước đâu.",
-      "Ước deadline lùi lại? Ngôi sao không có quyền đó. Ban tổ chức cũng không.",
-      "Điều ước của ngươi đã được ghi nhận… vào /dev/null.",
+      "Ước crypto dễ hơn à? Toán học không có chỗ cho phép thuật đâu.",
+      "Ước deadline lùi lại? Ngôi sao không có quyền đó. Bọn ta cũng không.",
+      "Điều ước của ngươi đã được ghi nhận vào… /dev/null.",
       "Ước code chạy đúng ngay lần đầu? Đến ngôi sao cũng phải bật cười.",
       "Lại ước nữa à? Sao băng cũng có rate limit đấy, 429 Too Many Wishes.",
-      "Ước được vào CLB mà khỏi điền form? Cái form ngay bên dưới kìa, lười vừa thôi.",
-      "Ta từng ước có một con vẹt. Giờ ta có một ngôi sao biết cười. Đời là thế.",
-      "Ước sẽ hiểu ngay cái heap exploit đầu tiên? Ta ước có kho báu, vẫn đang chờ đây.",
-      "Ngôi sao bảo ngươi nên ước ít đi và đọc writeup nhiều hơn."
+      "Ước được vào CLB mà khỏi phải điền form? Cái form ngay kia kìa, lười vừa thôi.",
+      "Ta từng ước có một con vẹt. Giờ ta có một ngôi sao cười. Đời là thế.",
+      "Ước sẽ hiểu ngay cái heap exploit đầu tiên? Ta cũng ước có kho báu mà vẫn đang chờ đây.",
+      "Ngôi sao bảo ngươi nên ước ít đi và học nhiều hơn."
     ]
   },
 
@@ -202,7 +226,7 @@ window.SITE = {
     keyLabel: "License Key :",
     namePlaceholder: "Nguyễn Văn A",
     idPlaceholder: "MSSV",
-    emailPlaceholder: "ban@gmail.com",
+    emailPlaceholder: "user@gmail.com",
     phonePlaceholder: "09xx xxx xxx",
     trackPlaceholder: "— chọn mảng —",
     keyPlaceholder: "ECSC{…}",
@@ -223,6 +247,6 @@ window.SITE = {
 
   intro: {
     line: "EPU Cybersecurity Club - Recruit 2026",
-    scroller: "EPU CYBERSECURITY CLUB PROUDLY PRESENTS ... TUYEN MEM - 2026 ... WEB * PWN * CRYPTO * FORENSICS * REVERSING ... 10 FLAG PIECES ARE HIDDEN IN HERE ... MUSIC: UNREAL SUPERHERO 3 BY KENET & REZ ... GREETZ TO ALL CTF PLAYERS, DEMOSCENERS AND CURIOUS MINDS ... TURN YOUR SPEAKERS UP ...     "
+    scroller: "EPU CYBERSECURITY CLUB PROUDLY PRESENTS ... TUYEN THANH VIEN 2026 ... WEB * PWN * CRYPTO * FORENSICS * REVERSING ... 10 FLAG PIECES ARE HIDDEN IN HERE ... MUSIC: UNREAL SUPERHERO 3 BY KENET & REZ ... GREETZ TO ALL CTF PLAYERS, DEMOSCENERS AND CURIOUS MINDS ... TURN YOUR SPEAKERS UP ...     "
   }
 };

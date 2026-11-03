@@ -44,7 +44,7 @@
     const R = rng(1337);
     const damp = THREE.MathUtils.damp;
     const small = coarse || Math.min(innerWidth, innerHeight) < 640;
-    const say = (t) => EPU.ui.say(t);
+    const say = (t, cb) => EPU.ui.say(t, cb);
 
     const renderer = new THREE.WebGLRenderer({ canvas, antialias: false, powerPreference: 'high-performance' });
     renderer.setPixelRatio(Math.min(devicePixelRatio || 1, small ? 1 : 1.25));
@@ -732,7 +732,15 @@
       return { x: ((tmp.x + 1) / 2) * innerWidth, y: ((1 - tmp.y) / 2) * innerHeight };
     }
     const nn = (i) => String(i + 1).padStart(2, '0');
-    const trackLine = (i) => S.pirate.track.replace('{name}', `${nn(i)} · ${S.tracks[i].name}`).replace('{blurb}', S.tracks[i].blurb);
+    const trackLine = (i, isCollecting = false) => {
+      const base = S.pirate.track.replace('{name}', `${nn(i)} · ${S.tracks[i].name}`).replace('{blurb}', S.tracks[i].blurb);
+      const allFound = EPU.state.collected.size >= S.tracks.length;
+      const alreadyGot = EPU.state.collected.has(i);
+      if (!allFound && (!alreadyGot || isCollecting)) {
+        return base + ' (+1 ★)';
+      }
+      return base;
+    };
 
     addEventListener(
       'pointermove',
@@ -858,22 +866,38 @@
       return (lastWish = wishBag.pop());
     }
 
+    let activeStarIdx = -1;
     function collect(i) {
       const g = trackStars[i];
       if (g.userData.gone) return;
-      burst(g.getWorldPosition(new THREE.Vector3()), 40, SPARK, 5);
-      g.userData.gone = 7;
-      A.sfx('star');
-      EPU.state.collected.add(i);
-      EPU.emit('star:collect', i);
-      say(trackLine(i));
-      if (EPU.state.collected.size === S.tracks.length) EPU.emit('stars:all');
+
+      if (EPU.state.collected.has(i)) {
+        g.userData.lit = 2;
+        A.sfx('blip');
+        say(trackLine(i, false));
+        return;
+      }
+
+      activeStarIdx = i;
+      g.userData.lit = 2;
+      A.sfx('blip');
+      say(trackLine(i, true), () => {
+        if (activeStarIdx === i && !EPU.state.collected.has(i)) {
+          burst(g.getWorldPosition(new THREE.Vector3()), 40, SPARK, 5);
+          g.userData.gone = 1.8;
+          A.sfx('star');
+          EPU.state.collected.add(i);
+          EPU.emit('star:collect', i);
+          if (EPU.state.collected.size === S.tracks.length) EPU.emit('stars:all');
+          activeStarIdx = -1;
+        }
+      });
     }
 
     EPU.on('track:hover', (i) => (hoverTrack = i));
     EPU.on('track:show', (i) => {
       trackStars[i].userData.lit = 1.5;
-      say(trackLine(i));
+      say(trackLine(i, false));
       A.sfx('blip');
     });
     EPU.on('celebrate', () => {
@@ -1005,13 +1029,16 @@
         if (u.gone) u.gone = Math.max(0, u.gone - dt);
         u.vis = damp(u.vis, u.gone ? 0 : 1, u.gone ? 10 : 6, dt);
         u.lit = Math.max(0, u.lit - dt);
-        const on = hoverStar === i ? 1 : 0;
+        const on = (hoverStar === i || activeStarIdx === i) ? 1 : 0;
+        const isGot = EPU.state.collected.has(i);
+        const STAR_COL = isGot ? new THREE.Color(0xffd23a) : PINK;
+        const STAR_EM = isGot ? new THREE.Color(0xff8a00) : PINK_E;
         g.scale.setScalar(u.base * Math.max(0.001, u.vis) * (1 + on * 0.45 + beat * 0.08 + u.lit * 0.3));
-        u.mat.color.copy(PINK).lerp(BLOOD, risenAmt);
-        u.mat.emissive.copy(PINK_E).lerp(BLOOD_E, risenAmt);
-        u.mat.emissiveIntensity = 0.9 + on * 1.2 + beat * 0.4;
-        u.glow.material.opacity = 0.45 + on * 0.4;
-        u.glow.material.color.set(0xff5fc8).lerp(colTmp.set(0xff1a00), risenAmt);
+        u.mat.color.copy(STAR_COL).lerp(BLOOD, risenAmt);
+        u.mat.emissive.copy(STAR_EM).lerp(BLOOD_E, risenAmt);
+        u.mat.emissiveIntensity = (isGot ? 1.3 : 0.9) + on * 1.2 + beat * 0.4;
+        u.glow.material.opacity = (isGot ? 0.6 : 0.45) + on * 0.4;
+        u.glow.material.color.set(isGot ? 0xffd23a : 0xff5fc8).lerp(colTmp.set(0xff1a00), risenAmt);
       });
 
       goal.rotation.z += dt * 0.3;
