@@ -9,8 +9,13 @@
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>☠</text></svg>">
 
   <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
-  <link rel="stylesheet" href="css/fonts.css?v=20261101">
-  <link rel="stylesheet" href="css/style.css?v=20261101">
+  <script>
+    if ((window.matchMedia && matchMedia('(pointer: coarse)').matches && matchMedia('(hover: none)').matches) || /Android.*Mobile|iPhone|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) {
+      document.documentElement.classList.add('is-mobile');
+    }
+  </script>
+  <link rel="stylesheet" href="css/fonts.css?v=20261111">
+  <link rel="stylesheet" href="css/style.css?v=20261111">
 
   <script type="importmap">
   {
@@ -21,13 +26,13 @@
   }
   </script>
 
-  <script src="config.js?v=20261101"></script>
-  <script src="js/core.js?v=20261101" defer></script>
-  <script src="js/audio.js?v=20261101" defer></script>
-  <script src="js/ctf.js?v=20261101" defer></script>
-  <script src="js/collage.js?v=20261101" defer></script>
-  <script src="js/scene.js?v=20261101" defer></script>
-  <script src="js/main.js?v=20261101" defer></script>
+  <script src="config.js?v=20261111"></script>
+  <script src="js/core.js?v=20261111" defer></script>
+  <script src="js/audio.js?v=20261111" defer></script>
+  <script src="js/ctf.js?v=20261111" defer></script>
+  <script src="js/collage.js?v=20261111" defer></script>
+  <script src="js/scene.js?v=20261111" defer></script>
+  <script src="js/main.js?v=20261111" defer></script>
 </head>
 <body>
   <!-- ☠ 10 flag pieces are hidden in this page. The pirate knows where. -->
@@ -39,6 +44,38 @@
 
   <div id="seam" tabindex="0" role="slider" aria-label="1998 / 2026 split" aria-valuemin="0" aria-valuemax="100"><span>2026</span><b>◂▸</b><span>1998</span></div>
   <div id="sc" hidden></div>
+
+  <div id="notice" role="dialog" aria-modal="true" aria-labelledby="noticeTitle">
+    <div class="win notice-box">
+      <div class="win-title">
+        <span class="wi">⚠</span>
+        <span class="wt" id="noticeTitle">SYSTEM_NOTICE.EXE</span>
+        <span class="wb" aria-hidden="true"><i>_</i><i>□</i></span>
+      </div>
+      <div class="notice-body">
+        <div class="notice-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" shape-rendering="crispEdges">
+            <rect x="4" y="3" width="16" height="12" fill="#1b0f33"/>
+            <rect x="5" y="4" width="14" height="10" fill="#cbb9ef"/>
+            <rect x="6" y="5" width="12" height="8" fill="#1b0f33"/>
+            <rect x="7" y="6" width="10" height="1" fill="#ff4fd8"/>
+            <path d="M8 8h1v1h1v1H9v1H8v-1h1V9H8z" fill="#3dff6a"/>
+            <rect x="11" y="10" width="3" height="1" fill="#ffe14f"/>
+            <path d="M3 15h18v1h1v3H2v-3h1z" fill="#1b0f33"/>
+            <rect x="3" y="16" width="18" height="2" fill="#cbb9ef"/>
+            <rect x="5" y="16" width="14" height="1" fill="#6b4fa6"/>
+            <rect x="10" y="17" width="4" height="1" fill="#ffffff"/>
+          </svg>
+        </div>
+        <div class="notice-copy">
+          <p class="notice-text">Trang web sử dụng tốt nhất trên <strong>Laptop / PC</strong>.</p>
+        </div>
+      </div>
+      <div class="notice-foot">
+        <button class="notice-btn" id="noticeProceed" type="button">PROCEED</button>
+      </div>
+    </div>
+  </div>
 
   <div id="splash">
     <canvas id="intro" aria-hidden="true"></canvas>

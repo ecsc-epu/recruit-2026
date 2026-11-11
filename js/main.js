@@ -92,6 +92,21 @@
       showProgress();
     });
 
+  const notice = $('#notice'), noticeBtn = $('#noticeProceed');
+  const isMobile = document.documentElement.classList.contains('is-mobile');
+  let noticeDone = !notice || !isMobile, splashUnlockAt = 0;
+  if (!isMobile && notice) notice.remove();
+  function dismissNotice() {
+    if (noticeDone) return;
+    noticeDone = true;
+    scrollX = 0;
+    splashUnlockAt = performance.now() + 350;
+    if (noticeBtn) noticeBtn.disabled = true;
+    notice.classList.add('off');
+    setTimeout(() => notice.remove(), 350);
+  }
+  if (noticeBtn && isMobile) noticeBtn.addEventListener('click', dismissNotice);
+
   let ready = false, entering = false;
   Promise.all([fontsP, audioP, timeout(sceneP, 20000)]).then(() => {
     clearInterval(poll);
@@ -103,7 +118,7 @@
   });
 
   async function enter() {
-    if (!ready || entering) return;
+    if (!noticeDone || !ready || entering || performance.now() < splashUnlockAt) return;
     entering = true;
     try {
       await EPU.audio.start();
@@ -127,6 +142,7 @@
 
   let typed = '';
   addEventListener('keydown', (e) => {
+    if (!noticeDone) return;
     if (!EPU.state.entered) {
       if (!e.repeat && !['Shift', 'Control', 'Alt', 'Meta', 'Tab'].includes(e.key)) enter();
       return;
@@ -161,7 +177,7 @@
     EPU.state.mx += (aim.x - EPU.state.mx) * k;
     EPU.state.my += (aim.y - EPU.state.my) * k;
     EPU.audio.update(dt);
-    if (introOn) drawIntro(T, dt);
+    if (introOn && noticeDone) drawIntro(T, dt);
     EPU.ui.frame(dt);
     if (EPU.scene.ready) EPU.scene.frame(dt, T);
     requestAnimationFrame(loop);
