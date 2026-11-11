@@ -43,6 +43,14 @@
     coarse: matchMedia('(pointer: coarse)').matches
   };
 
+  try {
+    if (localStorage.getItem('epu.ctf.found.ok') !== '1') {
+      const saved = JSON.parse(localStorage.getItem('epu.ctf.found') || '[]');
+      const cleaned = saved.filter((n) => ![3, 5, 9].includes(n) || !!(localStorage.getItem('epu.user_part.' + n) || '').trim());
+      if (cleaned.length !== saved.length) localStorage.setItem('epu.ctf.found', JSON.stringify(cleaned));
+    }
+  } catch (e) {}
+
   EPU.setRisen = (on) => {
     if (EPU.state.risen === on) return;
     EPU.state.risen = on;

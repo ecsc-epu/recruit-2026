@@ -11,9 +11,34 @@
   const stage = $('#stage');
   const ui = (EPU.ui = {});
   let zTop = 20;
+  const TYPEABLE_IDS = new Set([3, 5, 9]);
+  const readUserPart = (n) => {
+    try { return (localStorage.getItem('epu.user_part.' + n) || '').trim(); } catch (e) { return ''; }
+  };
+  const syncFoundStore = (n, present) => {
+    try {
+      const arr = JSON.parse(localStorage.getItem('epu.ctf.found') || '[]');
+      const next = present ? (arr.includes(n) ? arr : [...arr, n]) : arr.filter((x) => x !== n);
+      localStorage.setItem('epu.ctf.found', JSON.stringify(next));
+    } catch (e) {}
+  };
 
   function build() {
     const ctf = EPU.ctf;
+    if (!ctf._typeableWrapped) {
+      ctf._typeableWrapped = true;
+      const origHas = ctf.has, origPart = ctf.part;
+      ctf.has = (n) => (TYPEABLE_IDS.has(n) ? ctf.solved || !!readUserPart(n) : origHas(n));
+      ctf.count = () => {
+        let count = 0;
+        for (let i = 1; i <= ctf.total; i++) if (ctf.has(i)) count++;
+        return count;
+      };
+      ctf.part = (n) => (TYPEABLE_IDS.has(n) ? readUserPart(n) || (ctf.solved ? origPart(n) : '') : origPart(n));
+      TYPEABLE_IDS.forEach((n) => {
+        if (!ctf.solved && !readUserPart(n)) syncFoundStore(n, false);
+      });
+    }
     const underN = ctf.where.sticker;
     stage.innerHTML = `
       <h1 class="piece p-title">
@@ -886,7 +911,7 @@
       $$('i', parts).forEach((el) => {
         const n = +el.dataset.n;
         el.classList.toggle('got', ctf.has(n));
-        if (n === 3 || n === 5 || n === 9) el.classList.add('typeable');
+        if (TYPEABLE_IDS.has(n)) el.classList.add('typeable');
       });
       $('#kgPartsN').textContent = `${ctf.count()}/${ctf.total}`;
     };
@@ -903,8 +928,7 @@
     const openInputModal = (n) => {
       currentInputN = n;
       modalTitle.textContent = `NHẬP MẢNH FLAG #${n}/10`;
-      const existing = localStorage.getItem('epu.user_part.' + n) || ctf.part(n) || '';
-      modalInput.value = existing;
+      modalInput.value = readUserPart(n) || ctf.part(n) || '';
       modal.hidden = false;
       setTimeout(() => modalInput.focus(), 50);
     };
@@ -918,14 +942,23 @@
       const n = currentInputN;
       if (!n) return closeInputModal();
       const val = modalInput.value.trim();
+      const had = !!readUserPart(n);
       if (val) {
-        localStorage.setItem('epu.user_part.' + n, val);
-        if (n === 3) ctf.reveal('dom');
-        if (n === 5) ctf.reveal('console');
-        if (n === 9) ctf.reveal('storage');
+        try { localStorage.setItem('epu.user_part.' + n, val); } catch (e) {}
+        syncFoundStore(n, true);
+        EPU.emit('ctf:update', n);
         paint();
         ui.say(`Đã lưu mảnh #${n}/10: "${val}"`);
         EPU.audio.sfx('ok');
+      } else if (had) {
+        try { localStorage.removeItem('epu.user_part.' + n); } catch (e) {}
+        syncFoundStore(n, false);
+        EPU.emit('ctf:update', n);
+        paint();
+        const place = Object.keys(ctf.where).find((p) => ctf.where[p] === n);
+        const hint = place && S.pirate.hints && S.pirate.hints[place];
+        ui.say(hint ? `Đã xóa mảnh #${n}/10! ${hint}` : `Đã xóa mảnh #${n}/10.`);
+        EPU.audio.sfx('blip');
       }
       closeInputModal();
     };
@@ -940,15 +973,10 @@
       });
     }
 
-    // Auto-reveal if already saved previously
-    if (localStorage.getItem('epu.user_part.3')) ctf.reveal('dom');
-    if (localStorage.getItem('epu.user_part.5')) ctf.reveal('console');
-    if (localStorage.getItem('epu.user_part.9')) ctf.reveal('storage');
-
     parts.addEventListener('click', (e) => {
       const n = +(e.target.dataset && e.target.dataset.n);
       if (!n) return;
-      if (n === 3 || n === 5 || n === 9) {
+      if (TYPEABLE_IDS.has(n)) {
         openInputModal(n);
         return;
       }
@@ -964,7 +992,7 @@
         const partsList = [];
         let filledCount = 0;
         for (let i = 1; i <= ctf.total; i++) {
-          const userVal = localStorage.getItem('epu.user_part.' + i);
+          const userVal = readUserPart(i);
           const piece = userVal || ctf.part(i) || picFallback(i) || '';
           if (piece) filledCount++;
           partsList.push(piece);
